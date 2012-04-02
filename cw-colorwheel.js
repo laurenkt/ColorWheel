@@ -21,19 +21,17 @@ cw = (function($) {
 
 		isRGB: function(rgb) {
 			return rgb == null ||
-				   ('r' in rgb && 'g' in rgb && 'b' in rgb);
+			       ($.isPlainObject(rgb) && 'r' in rgb && 'g' in rgb && 'b' in rgb);
 		},
 
 		isHSL: function(hsl) {
-			return $.isEmptyObject(hsl) ||
-				   'h' in hsl ||
-				   's' in hsl ||
-				   'l' in hsl;
+			return $.isPlainObject(hsl) &&
+			       ($.isEmptyObject(hsl) || 'h' in hsl || 's' in hsl || 'l' in hsl);
 		},
 
 		isColorString: function(str) {
 			return str == 'transparent' ||
-				   (str[0] == '#' && (str.length == 4 || str.length == 7))
+			       (str[0] == '#' && (str.length == 4 || str.length == 7));
 		},
 
 		/*
@@ -76,13 +74,13 @@ cw = (function($) {
 				return cw.RGB(r+min, g+min, b+min);
 			}
 
-			return (0 <= h && h < 1) ? f(chroma, 0, mid) :
-				   (1 <= h && h < 2) ? f(mid, 0, chroma) :
-				   (2 <= h && h < 3) ? f(0, mid, chroma) :
-				   (3 <= h && h < 4) ? f(0, chroma, mid) :
-				   (4 <= h && h < 5) ? f(mid, chroma, 0) :
-				   (5 <= h && h < 6) ? f(chroma, mid, 0) :
-				   f(l, l, l); // default
+			return (0 <= h && h < 1) ? f(chroma, mid, 0) :
+			       (1 <= h && h < 2) ? f(mid, chroma, 0) :
+			       (2 <= h && h < 3) ? f(0, chroma, mid) :
+			       (3 <= h && h < 4) ? f(0, mid, chroma) :
+			       (4 <= h && h < 5) ? f(mid, 0, chroma) :
+			       (5 <= h && h < 6) ? f(chroma, 0, mid) :
+			       f(l, l, l); // default
 		},
 
 		RGBToHSL: function(rgb) {
@@ -99,7 +97,7 @@ cw = (function($) {
 
 			if (chroma == 0) return {s:0, l:l}; // achromatic
 
-				 if (max == r) h = (g - b)/chroma % 6;
+			     if (max == r) h = (g - b)/chroma % 6;
 			else if (max == g) h = (b - r)/chroma + 2;
 			else if (max == b) h = (r - g)/chroma + 4;
 
@@ -121,8 +119,8 @@ cw = (function($) {
 			};
 
 			return '#' + decToHexByte(rgb.r * 255) +
-						 decToHexByte(rgb.g * 255) +
-						 decToHexByte(rgb.b * 255);
+			             decToHexByte(rgb.g * 255) +
+			             decToHexByte(rgb.b * 255);
 		},
 
 		HSLToString: function(hsl) { return cw.RGBToString(cw.HSLToRGB(hsl)); },
@@ -130,15 +128,11 @@ cw = (function($) {
 		stringToRGB: function(string) {
 			if (string == 'transparent') return null;
 			
-			function hexByteToDec(hexByte) { 
-				return parseInt(hexByte, 16);
-			};
-			
-			var extract = function(part) { return hexByteToDec(string.substring(part+1, part+3)) / 255; };
+			var extract = function(part) { return parseInt(string.substring(part*2 + 1, part*2 + 3), 16) / 255; };
 
 			// use a different extract if form is #abc
 			if (string.length == 4) {
-				extract = function(part) { return hexByteToDec(string[part+1]) / 15; }
+				extract = function(part) { return parseInt(string[part+1], 16) / 15; }
 			}
 			
 			return cw.RGB(extract(0), extract(1), extract(2));
@@ -242,9 +236,9 @@ cw = (function($) {
 				this._update();
 				_nodes.$root.trigger('change', this);
 			};
+			this.getHSL = function() { return _hsl; };
 
 			this.getRoot = function() { return _nodes.$root; }
-			this.getHSL = function() { return _hsl; };
 
 			this.isHueSelected = function() { return ('h' in _hsl); }
 			this.isSLSelected = function() { return ('s' in _hsl && 'l' in _hsl); }
@@ -276,7 +270,7 @@ cw = (function($) {
 				if (_selected != 'none') {
 					// Capture mouse
 					$(document).bind('mousemove.cw', $.proxy(this._onDocumentDrag, this))
-							   .bind('mouseup.cw', $.proxy(this._onDocumentMouseUp, this));
+					           .bind('mouseup.cw', $.proxy(this._onDocumentMouseUp, this));
 
 					// Pass event on to drag handler
 					return this._onDocumentDrag(e);
@@ -285,7 +279,7 @@ cw = (function($) {
 
 			this._onDocumentMouseUp = function(e) {
 				$(document).unbind('mousemove.cw')
-						   .unbind('mouseup.cw');
+				           .unbind('mouseup.cw');
 
 				_selected = 'none';
 				
@@ -408,19 +402,21 @@ cw = (function($) {
 		}
 	}
 
-	// automatically appends a colorwheel to the selected node, and stores a
-	// reference to it under node.colorWheel
-	$.fn.colorWheel = function(options) {
-		return this.each(function(){
-			this.colorWheel = new cw.ColorWheel(options);
-			$(this).append(this.wheel.getRoot());
-		});
-	};
-
 	// allows using $(':color-wheel') to find all elements that have had a ColorWheel
 	// appended with $(el).colorWheel();
 	$.expr[':']['color-wheel'] = function(el) {
-		return ('colorWheel' in el);
+		return (typeof $(el).data('colorWheel.cw') != 'undefined');
+	};
+
+	// automatically appends a colorwheel to the selected node, and stores a
+	// reference to it in the node's data attribute
+	$.fn.colorWheel = function(options) {
+		return this.filter(':not(:color-wheel)').each(function(){
+			var colorWheel = new cw.ColorWheel(options);
+			$(this)
+				.data('colorWheel.cw', colorWheel)
+				.append(colorWheel.getRoot());
+		});
 	};
 
 	return cw;
