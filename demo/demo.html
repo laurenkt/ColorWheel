@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ColorWheel Demo</title>
+
+		<!-- jQuery -->
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="jquery.shadow.js"></script>
+
+		<!-- ColorWheel -->
+		<link rel="stylesheet" href="../cw-style.css" type="text/css">
+		<script type="text/javascript" src="../cw-colorwheel.js"></script>
+
+		<!-- Demo -->
+		<link rel="stylesheet" href="demo-style.css" type="text/css">
+		<script type="text/javascript" src="demo-utilities.js"></script>
+	</head>
+	<body>
+		<h1>ColorWheel</h1>
+
+		<div class="demo" id="demo1">
+			<h2>1. Partial Selection</h2>
+			<p>In observing users that were presented with some of the existing color wheels found on the internet, I found that some users, particularly ones who were unlikely to have encountered a HSL wheel before, were not realising that to select a whole color, they needed to select both a hue and a saturation/lightness vector. This, combined with the poor default lightness of 0 in many solutions, meant that users who had painstakingly selected many colours on the outer hue wheel would often have their input interpreted as 100% black.</p>
+			<p><strong>ColorWheel</strong> aims to try and solve this problem with partial color selection. In its default behavior, the S/L grid will not show to the user until they have selected a hue on the outer wheel. This is intended so that the appearance of the S/L grid will make the users more aware that it is interactable.
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				$('#demo1 div.wheel')
+					.colorWheel({pingEnable:true})
+					.bind('change', function(e, wheel) { 
+						if (wheel.isSLSelected()) {
+							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
+								'<strong>S/L</strong> selected</pre>');	
+						}
+						else {
+							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
+								'<strong>S/L</strong> not selected</pre>');	
+						}
+					});
+			</script>
+			<pre class="small"><strong>Hue</strong> not selected<br><strong>S/L</strong> not selected</pre>
+		</div>
+
+		<div class="demo" id="demo2">
+			<h2>2. Callback</h2>
+			<p>A callback function (optionally taking an HSL object) can be given as an option on creation, or set at any time. <strong>ColorWheel</strong> exports utility functions (<code>HSLToRGB</code>, <code>HSLToString</code>) so that the HSL object can be converted into an RGB object or a CSS-style hex-string representation.</p>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				$('#demo2 div.wheel').colorWheel({callback: function(newHSL){
+					$('#demo2 pre')
+						.css({borderColor: cw.HSLToString(newHSL)})
+						.html(summarize(newHSL));
+				}});
+			</script>
+			<pre class="small">n/a<br>rgb(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)<br>hsl(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)</pre>
+		</div>
+
+		<div class="demo" id="demo3">
+			<h2>3. Custom-sized Components</h2>
+			<p>The size of the components is defined with CSS. Using replacement sprites is recommended; information on how to do so is on <a href="#">the project's GitHub wiki</a>.</p>
+			<style type="text/css">
+				#demo3 .cw-colorwheel {width:360px; height:360px}
+				#demo3 .cw-colorwheel .cw-h {width:360px; height:360px;
+					background:url(demo-2-sprites.png) no-repeat 0 0}
+				#demo3 .cw-colorwheel .cw-sl {position:absolute; top:140px; left:140px; width:80px;
+					height:80px; background:url(demo-2-sprites.png) no-repeat 0 -360px}
+				#demo3 .cw-colorwheel .cw-marker {position:absolute; width:22px; height:22px;
+					margin:-10px 0 0 -10px; background:url(demo-2-sprites.png) no-repeat -80px -360px}
+				#demo3 .cw-colorwheel .cw-swatch {position:absolute; width:14px;
+					height:14px; margin:-6px 0 0 -6px}
+			</style>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				// the inset options indicates how far the hue marker should be
+				// positioned from the edge of the wheel
+				$('#demo3 div.wheel').colorWheel({inset: 5});
+			</script>
+		</div>
+
+		<div class="demo" id="demo4">
+			<h2>4. Validate Color Selection</h2>
+			<p>The callback function can reject the new selection by returning <code>false</code>, or alter the selection by returning an altered HSL object <code>{h:0..360, s:0..1, l:0..1}</code>.</p>
+			<p>Returning <code>true</code>, not returning any value, or returning the same value will allow the selection.</p>
+			<pre><code>wheel.setCallback(<span class="function">function</span>(newHSL) <span class="function">{</span><br>    <span class="comment">// allow selection</span><br>    <span class="keyword">return</span> newHSL;<br>    <span class="keyword">return</span> <span class="literal">true</span>;<br>    <span class="keyword">return</span>;<br><br>    <span class="comment">// reject selection</span><br>    <span class="keyword">return</span> <span class="literal">false</span>;<br><br>    <span class="comment">// alter, e.g. always select fully saturated</span><br>    <span class="keyword">return</span> <span class="object">{</span><span class="property">h</span>:newHSL.h, <span class="property">s</span>:1, <span class="property">l</span>:newHSL.l<span class="object">}</span>;<br><span class="function">}</span>);</code></pre>
+			<p>The example below forces the lightness into the range 0.15..0.85, and only allows lightness/saturation to be selected in multiples of 10 at 0.05 offsets. A replacement sprite is used so that these restrictions would be clear to the user.
+			<style type="text/css">
+				#demo4 .cw-colorwheel .cw-sl {background:url(demo-3-sl-sprite.png) no-repeat 0 0}
+			</style>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				$('#demo4 div.wheel').colorWheel({callback: function(newHSL){
+					function within(min, max, n) { return Math.max(min, Math.min(max, n)); }
+					function incrementsOf(i, offset, n) { return Math.round((n+offset) * i)/i - offset; }
+
+					if ('l' in newHSL) {
+						newHSL.l = within(0.15, 0.85, incrementsOf(10, 0.05, newHSL.l));
+					}
+
+					if ('s' in newHSL) {
+						newHSL.s = within(0.05, 0.95, incrementsOf(10, 0.05, newHSL.s));
+					}
+
+					return newHSL;
+				}});
+			</script>
+		</div>
+	</body>
+</html>
