@@ -13,10 +13,10 @@ For the saturation/lightness gradient:
 1. Create a selection for the size of box you want (I use 100px by 100px)
 2. Use a fill command with a gradient from 0% opacity, #808080, to 100% opacity #808080, from left to right. If you're using Photoshop, make sure the smoothness of the gradient is set to 0 to get an accurate gradient
 3. On a layer above, using the same selection, use a fill command from top to bottom with the following gradient (also smoothness 0 in Photoshop):
-	a. Position 0. 100% opacity. #FFFFFF
-	b. Position 50. 0% opacity. #FFFFFF
-	c. Position 50. 0% opacity. #000000
-	d. Position 100. 100% opacity. #000000
+	1. Position 0. 100% opacity. #FFFFFF
+	2. Position 50. 0% opacity. #FFFFFF
+	3. Position 50. 0% opacity. #000000
+	4. Position 100. 100% opacity. #000000
 
 For the marker:
 
