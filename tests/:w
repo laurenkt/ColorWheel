@@ -1,0 +1,11 @@
+describe("ColorWheel", function() {
+	var aHSL = {h:167, s:0.8, l:0.4};
+
+	describe("setting the color", function() {
+		console.log(cw);
+		var colorWheel = new cw.ColorWheel;
+		colorWheel.setHSL(aHSL);
+		
+		expect(colorWheel.getHSL()).isEqualHSL(aHSL);
+	});
+});
