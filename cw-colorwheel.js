@@ -238,6 +238,12 @@ cw = (function($) {
 			this.setCallback = function(f) { _callback = f; };
 
 			this.setHSL = function(hsl) {
+				if (!options.allowPartialSelection) {
+					if (!cw.isCompleteHSL(hsl)) {
+						throw new Error("Cannot use partial HSL object with allowPartialSelection option disabled");
+					}
+				}
+
 				_hsl = hsl;
 				this._update();
 				_nodes.$root.trigger('change', this);
