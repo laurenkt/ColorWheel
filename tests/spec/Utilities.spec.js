@@ -2,16 +2,42 @@ describe("Utilities", function() {
 	var aTransparentRGB = null;
 	var anRGB = {r:0.5, g:0.6, b:0.4};
 	var aHSL = {h:167, s:0.8, l:0.4};
+	var aPartialHSL = {h:144};
 	var someOtherObject = {some: 'Other'};
 	var aColorString = '#3464AA';
 
 	describe("isRGB", function() {
-		it("should only identify an RGB object as RGB", function() {
+		it("should identify RGB objects as RGB", function() {
 			expect(cw.isRGB(anRGB)).toBe(true);
 			expect(cw.isRGB(aTransparentRGB)).toBe(true);
+		});
+		it("should not identify other objects as RGB", function() {
 			expect(cw.isRGB(aHSL)).toBe(false);
 			expect(cw.isRGB(someOtherObject)).toBe(false);
 			expect(cw.isRGB(aColorString)).toBe(false);
+		});
+	});
+
+	describe("isHSL", function() {
+		it("should identify HSL objects as HSL", function() {
+			expect(cw.isHSL(aHSL)).toBe(true);
+			expect(cw.isHSL(aPartialHSL)).toBe(true);
+			expect(cw.isHSL({})).toBe(true);
+		});
+		it("should not identify other objects as HSL", function() {
+			expect(cw.isHSL(anRGB)).toBe(false);
+			expect(cw.isHSL(someOtherObject)).toBe(false)
+			expect(cw.isHSL(aColorString)).toBe(false);
+		});
+	});
+
+	describe("isCompleteHSL", function() {
+		it("should identify complete HSL objects as HSL", function() {
+			expect(cw.isCompleteHSL(aHSL)).toBe(true);
+		});
+		it("should not identify partial HSL objects as HSL", function() {
+			expect(cw.isCompleteHSL(aPartialHSL)).not.toBe(true);
+			expect(cw.isCompleteHSL({})).not.toBe(true);
 		});
 	});
 
