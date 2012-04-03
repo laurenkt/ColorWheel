@@ -3,14 +3,18 @@
 
 /size 360 def
 
+2 setlinewidth
+
 0 1 size {
 	/hue exch def
-	hue 360 div
+	hue size div
 	1 1 sethsbcolor
 	newpath
 	hue 0 moveto
 	hue size lineto
 	stroke	
 } for
+
+360 360 scale
 
 showpage

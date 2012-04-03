@@ -22,18 +22,25 @@ Installation
 
 See the demo/ folder for an example, or:
 
-1. Ensure your page has a script element for jQuery. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
+1. 	Ensure your page has a script element for jQuery. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
 
-2. You need the `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`, include the first two in your page like so:
+2. 	You need the `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`, include the first two in your page like so:
+	
 		<link rel="stylesheet" href="../cw-style.css" type="text/css">
 		<script type="text/javascript" src="../cw-colorwheel.js"></script>
+	
 	Preferably in your `<head>` element, but definitely after jQuery.
 
-3. Use the jQuery plug-in to append a color wheel to an element:
+3. 	Use the jQuery plug-in to append a color wheel to an element:
+	
 		$('#someElement').colorWheel();
+	
 	Access this created color wheel using the data attribute created for ColorWheel:
+	
 		$('#someElement').data('colorWheel.cw').setHSL(cw.HSL(120, 1, 0.5)); // sets the colorWheel to green
+	
 	Alternatively, create a color wheel yourself. You can access its root node with `colorWheel.getRoot()`
+	
 		colorWheel = new cw.ColorWheel;
 		colorWheel.setHSL(cw.HSL(240, 1, 0.5)); // sets the colorWheel to blue
 		$('#someElement').append(colorWheel.getRoot());
