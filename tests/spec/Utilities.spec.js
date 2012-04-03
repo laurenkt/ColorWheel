@@ -3,6 +3,7 @@ describe("Utilities", function() {
 	var anRGB = {r:0.5, g:0.6, b:0.4};
 	var aHSL = {h:167, s:0.8, l:0.4};
 	var aPartialHSL = {h:144};
+	var anEmptyHSL = {};
 	var someOtherObject = {some: 'Other'};
 	var aColorString = '#3464AA';
 
@@ -91,6 +92,21 @@ describe("Utilities", function() {
 		});
 		it("should convert null to CSS transparent", function() {
 			expect(cw.RGBToString(null)).toBe('transparent');
+		});
+	});
+
+	describe("HSL", function() {
+		it("should construct HSL objects with all components", function() {
+			expect(cw.HSL(167, 0.8, 0.4)).toEqual(aHSL);
+		});
+
+		it("should construct HSL objects without any components", function() {
+			expect(cw.HSL()).toEqual(anEmptyHSL);
+		});
+
+		it("should construct HSL objects that can be identified by isRGB", function() {
+			expect(cw.isHSL(cw.HSL(0.1, 0, 1))).toBe(true);
+			expect(cw.isHSL(cw.HSL())).toBe(true);
 		});
 	});
 
