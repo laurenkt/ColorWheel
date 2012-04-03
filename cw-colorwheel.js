@@ -35,8 +35,9 @@ cw = (function($) {
 		},
 
 		isColorString: function(str) {
-			return str == 'transparent' ||
-			       (str[0] == '#' && (str.length == 4 || str.length == 7));
+			return typeof str == 'string' && 
+			       (str == 'transparent' ||
+			       (str[0] == '#' && (str.length == 4 || str.length == 7)));
 		},
 
 		/*
