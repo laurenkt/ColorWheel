@@ -1,9 +1,11 @@
 ColorWheel
 ==========
 
-**Warning**: this isn't ready for primetime yet - some stuff still doesn't work
+**Warning**: this isn't ready for primetime yet - some features aren't fully implemented, and test coverage is incomplete.
 
 A hue/saturation/lightness color wheel for jQuery.
+
+_Note_: I do accept pull requests (so long as they are reasonable, and do not cause any tests to fail)
 
 Features
 --------
