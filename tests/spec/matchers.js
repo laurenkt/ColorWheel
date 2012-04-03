@@ -11,6 +11,8 @@ beforeEach(function() {
 			       isEqualRounded(expected.b, this.actual.b, 2);
 		},
 		toEqualHSL: function(expected) {
+			if ($.isEmptyObject(expected)) return $.isEmptyObject(this.actual);
+
 			return expected.h === this.actual.h &&
 			       isEqualRounded(expected.s, this.actual.s, 2) &&
 			       isEqualRounded(expected.l, this.actual.l, 2);

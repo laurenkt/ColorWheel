@@ -48,6 +48,12 @@ describe("Utilities", function() {
 		it("should consider 'transparent' a color string", function() {
 			expect(cw.isColorString('transparent')).toBe(true);
 		});
+		it("should not identify other objects as color strings", function() {
+			expect(cw.isColorString(aHSL)).not.toBe(true);
+			expect(cw.isColorString(anRGB)).not.toBe(true);
+			expect(cw.isColorString(aTransparentRGB)).not.toBe(true);
+			expect(cw.isColorString({})).not.toBe(true);
+		});
 	});
 
 	describe("RGB", function() {
@@ -65,6 +71,17 @@ describe("Utilities", function() {
 		});
 	});
 
+	describe("RGBToHSL", function() {
+		it("should convert RGB objects to HSL", function() {
+			var anRGB = {r:1, g:0, b:0};
+
+			expect(cw.RGBToHSL(anRGB)).toEqualHSL({h:0, s:1, l:0.5});
+		});
+		it("should convert transparent RGB objects to empty HSL objects", function() {
+			expect(cw.RGBToHSL(null)).toEqualHSL({});
+		});
+	});
+
 	describe("RGBToString", function() {
 		it("should convert RGB objects to CSS color strings", function() {
 			var anRGB = {r:.078431373, g:.117647059, b:.745098039}; 
@@ -78,7 +95,7 @@ describe("Utilities", function() {
 	});
 
 	describe("HSLToRGB", function() {
-		it("should convert whole HSL objects to RGB", function() {
+		it("should convert complete HSL objects to RGB", function() {
 			// using aHSL
 			var asRGB = {r: .078431373, g: .721568627, b: .580392157};
 
