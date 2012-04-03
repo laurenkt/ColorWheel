@@ -26,8 +26,8 @@ See the demo/ folder for an example, or:
 
 2. 	You need the `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`, include the first two in your page like so:
 	
-		<link rel="stylesheet" href="../cw-style.css" type="text/css">
-		<script type="text/javascript" src="../cw-colorwheel.js"></script>
+		<link rel="stylesheet" href="cw-style.css" type="text/css">
+		<script type="text/javascript" src="cw-colorwheel.js"></script>
 	
 	Preferably in your `<head>` element, but definitely after jQuery.
 
@@ -62,6 +62,26 @@ Optionally, both methods allow specifying an object with initial parameters for 
 	// or:
 	
 	$('#someElement').colorWheel(options);
+
+Utilities
+---------
+
+Several utility functions are provided for those working with colors:
+
+	- `cw.RGB(r, g, b)` creates an RGB object
+	- `cw.HSL(h, s, l)` creates an HSL object
+	- `cw.isRGB(c)` returns `true` iff `c` is an RGB object
+	- `cw.isHSL(c)` returns `true` iff `c` is an HSL object
+	- `cw.isColorString(c)` returns `true` iff `c` is a CSS color string
+	- `cw.RGBToHSL(rgb)` converts an RGB object to an HSL object
+	- `cw.RGBToString(rgb)` converts an RGB object to a CSS color string
+	- `cw.HSLToRGB(hsl)` converts an HSL object to an RGB object
+	- `cw.HSLToString(hsl)` converts an HSL object to a CSS color string
+	- `cw.stringToRGB(string)` converts a CSS color string to an RGB object
+	- `cw.stringToHSL(string)` converts a CSS color string to an HSL object
+	- `cw.colorToRGB(c)` converts an RGB/HSL object or a CSS color string to an RGB object
+	- `cw.colorToHSL(c)` converts an RGB/HSL object or a CSS color string to an HSL object
+	- `cw.colorToString(c)` converts an RGB/HSL object or a CSS color string to a CSS color string
 
 Licence
 -------
