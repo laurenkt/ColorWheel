@@ -29,6 +29,11 @@ cw = (function($) {
 			       ($.isEmptyObject(hsl) || 'h' in hsl || 's' in hsl || 'l' in hsl);
 		},
 
+		isCompleteHSL: function(hsl) {
+			return $.isPlainObject(hsl) &&
+			       ('h' in hsl && 's' in hsl && 'l' in hsl);
+		},
+
 		isColorString: function(str) {
 			return str == 'transparent' ||
 			       (str[0] == '#' && (str.length == 4 || str.length == 7));
