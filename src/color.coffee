@@ -1,4 +1,7 @@
+this.cw = {}
+
 class cw.Color
+	isColor: -> true
 
 class cw.RGB extends cw.Color
 	@names = {
@@ -54,24 +57,24 @@ class cw.RGB extends cw.Color
 	isTransparent: =>
 		not (@r? or @g? or @b?)
 	
-	toRGB: => this
+	toRGB: =>
+		new cw.RGB(@r, @g, @b)
 
 	toHSL: =>
 		if this.isTransparent() then return new cw.HSL()
 
-		r = rgb.r; g = rgb.g; b = rgb.b
-
-		max = Math.max(r, g, b)
-		min = Math.min(r, g, b)
+		max = Math.max(@r, @g, @b)
+		min = Math.min(@r, @g, @b)
 		chroma = max - min
 		
 		l = (max + min)/2 # average of largest and smallest components
 
 		if (chroma == 0) then return new cw.HSL(undefined, 0, l) # achromatic
 
-		if      max is r then h = (g - b)/chroma % 6
-		else if max is g then h = (b - r)/chroma + 2
-		else if max is b then h = (r - g)/chroma + 4
+		h = switch max
+			when @r then (@g - @b)/chroma % 6
+			when @g then (@b - @r)/chroma + 2
+			when @b then (@r - @g)/chroma + 4
 
 		h *= 60; # convert from hexagonal representaiton to circular
 		s = chroma/(1 - Math.abs(2*l - 1))
@@ -88,7 +91,7 @@ class cw.RGB extends cw.Color
 			else
 				Math.round(rgbValue).toString(16)
 
-		"##{toHex(rgb.r)}#{toHex(rgb.g)}#{toHex(rgb.b)}"
+		"##{toHex @r}#{toHex @g}#{toHex @b}"
 	
 	@fromName: (name) ->
 		[r, g, b] = @names[name.toLowerCase()]
@@ -107,50 +110,51 @@ class cw.RGB extends cw.Color
 		new cw.RGB(byte(0), byte(1), byte(2))
 
 	@fromString: (string) ->
-		if string.toLowerCase() == 'translucent'
+		if string.toLowerCase() == 'transparent'
 			new cw.RGB()
 		else if string[0] == '#'
-			cw.RGB::fromHex(string)
+			@fromHex(string)
 		else
-			cw.RGB::fromName(string)
+			@fromName(string)
 
 class cw.HSL extends cw.Color
 	constructor: (@h, @s, @l) ->
 
 	isPartial: =>
-		@h? and @s? and @l?
+		not (@h? and @s? and @l?)
 	
 	isTransparent: =>
 		not (@h? or @s? or @l?)
 
-	toHSL: => this
+	toHSL: =>
+		new cw.HSL(@h, @s, @l)
 
 	toRGB: =>
 		if this.isTransparent() then return new cw.RGB()
 
 		# sensible defaults for partial hsl value
-		s = hsl.s ? 1
-		l = hsl.l ? 0.5
+		s = @s ? 1
+		l = @l ? 0.5
 
-		h = hsl.h / 60; # convert from circlular to hexagonal representation, h represents side
+		h = @h / 60; # convert from circlular to hexagonal representation, h represents side
 
 		chroma = (1 - Math.abs(2*l - 1)) * s
 		min = l - chroma/2 # find smallest component
 		mid = chroma * (1 - Math.abs(h%2 - 1)) # find middle component
 		
-		# returns RGB value equally lightened by smallest component
-		f = (r, g, b) -> new cw.RGB(r+min, g+min, b+min)
+		[r, g, b] =
+		if      0 <= h < 1 then [chroma, mid, 0]
+		else if 1 <= h < 2 then [mid, chroma, 0]
+		else if 2 <= h < 3 then [0, chroma, mid]
+		else if 3 <= h < 4 then [0, mid, chroma]
+		else if 4 <= h < 5 then [mid, 0, chroma]
+		else if 5 <= h < 6 then [chroma, 0, mid]
+		else [l, l, l] # default
 
-		if      0 <= h < 1 then f(chroma, mid, 0)
-		else if 1 <= h < 2 then f(mid, chroma, 0)
-		else if 2 <= h < 3 then f(0, chroma, mid)
-		else if 3 <= h < 4 then f(0, mid, chroma)
-		else if 4 <= h < 5 then f(mid, 0, chroma)
-		else if 5 <= h < 6 then f(chroma, 0, mid)
-		else                    f(l, l, l); # defaul
+		new cw.RGB(r+min, g+min, b+min) # RGB components equally lightened by smallest component
 
 	toString: =>
 		this.toRGB().toString()
 
 	@fromString: (string) ->
-		cw.RGB::fromString(string).toHSL()
+		cw.RGB.fromString(string).toHSL()
