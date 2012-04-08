@@ -7,9 +7,9 @@ var rgb = function(rgb) {
 }
 
 var hsl = function(hsl) {
-	return 'hsl(<strong style="color:' +cw.HSLToString({h:hsl.h})+ '">' +round(hsl.h)+ '</strong>,<strong>' +round(hsl.s)+ '</strong>,<strong>' +round(hsl.l)+ '</strong>)';
+	return 'hsl(<strong style="color:' +new cw.HSL(hsl.h)+ '">' +round(hsl.h)+ '</strong>,<strong>' +round(hsl.s)+ '</strong>,<strong>' +round(hsl.l)+ '</strong>)';
 }
 
 var summarize = function(color) {
-	return '<strong>' + cw.HSLToString(color) + '</strong>\n' + rgb(cw.HSLToRGB(color)) + '\n' + hsl(color);
+	return '<strong>' + color + '</strong>\n' + rgb(color.toRGB()) + '\n' + hsl(color);
 }

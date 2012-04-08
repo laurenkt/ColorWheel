@@ -47,7 +47,7 @@
 			<script type="text/javascript">
 				$('#demo2 div.wheel').colorWheel({callback: function(newHSL){
 					$('#demo2 pre')
-						.css({borderColor: cw.HSLToString(newHSL)})
+						.css({borderColor: newHSL})
 						.html(summarize(newHSL));
 				}});
 			</script>
