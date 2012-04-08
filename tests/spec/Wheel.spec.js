@@ -1,6 +1,10 @@
-describe("ColorWheel", function() {
-	var aHSL = {h:167, s:0.8, l:0.4};
+describe("Wheel", function() {
+	var aHSL;
 	var colorWheel;
+
+	beforeEach(function() {
+		aHSL = new cw.HSL(167, 0.8, 0.4);
+	});
 
 	describe(".setHSL", function() {
 		it("should allow changing of HSL value", function() {
@@ -24,7 +28,7 @@ describe("ColorWheel", function() {
 		it("shouldn't allow S/L to be set until hue has been", function() {
 			expect(colorWheel.canSetSL()).toBe(false);
 
-			colorWheel.setHSL({h:0});
+			colorWheel.setHSL(new cw.HSL(0));
 			expect(colorWheel.canSetSL()).toBe(true);
 		});
 	});
@@ -40,8 +44,8 @@ describe("ColorWheel", function() {
 		});
 
 		it("should allow a complete component to be set", function() {
-			expect(function(){colorWheel.setHSL(cw.HSL(126, 0.4, 0.6))}).not.toThrow();
-			expect(colorWheel.getHSL()).toEqualHSL(cw.HSL(126, 0.4, 0.6));
+			expect(function(){colorWheel.setHSL(new cw.HSL(126, 0.4, 0.6))}).not.toThrow();
+			expect(colorWheel.getHSL()).toEqualHSL(new cw.HSL(126, 0.4, 0.6));
 		});
 
 		it("shouldn't allow a partial component to be set", function() {
