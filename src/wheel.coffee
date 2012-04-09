@@ -35,8 +35,8 @@ cw.ColorWheel = (options) ->
 		y: Math.round -Math.cos(hue) * markerRailRadius + wheelRadius
 
 	_markerCoordsForSL = (saturation, lightness) ->
-		x: Math.round _nodes.$slInput.width() * (0.5 - saturation) + _nodes.$root.width()/2
-		y: Math.round _nodes.$slInput.height() * (0.5 - lightness) + _nodes.$root.height()/2
+		x: Math.round _nodes.$slInput.width() * (1 - saturation)
+		y: Math.round _nodes.$slInput.height() * (1 - lightness)
 
 	_ping = (enable) ->
 		if (!options.pingEnable) then return
@@ -185,24 +185,13 @@ cw.ColorWheel = (options) ->
 
 	# Initialisation
 
-	_nodes.$root = $("""
-					 <div class="cw-colorwheel">\
-						<div class="cw-h"/>\
-						<div class="cw-sl"/>\
-						<div class="cw-swatch cw-h-swatch"/>\
-						<div class="cw-marker cw-h-marker"/>\
-						<div class="cw-swatch cw-sl-swatch"/>\
-						<div class="cw-marker cw-sl-marker"/>\
-					 </div>
-					 """)
-
-	# store reference to each node for quick access
-	_nodes.$hueInput = _nodes.$root.find('.cw-h')
-	_nodes.$hueMarker = _nodes.$root.find('.cw-h-marker')
-	_nodes.$hueSwatch = _nodes.$root.find('.cw-h-swatch')
-	_nodes.$slInput = _nodes.$root.find('.cw-sl')
-	_nodes.$slMarker = _nodes.$root.find('.cw-sl-marker')
-	_nodes.$slSwatch = _nodes.$root.find('.cw-sl-swatch')
+	_nodes.$root      = $('<div class="cw-colorwheel" />')
+	_nodes.$hueInput  = $('<div class="cw-h" />').appendTo(_nodes.$root)
+	_nodes.$slInput   = $('<div class="cw-sl" />').appendTo(_nodes.$root)
+	_nodes.$hueSwatch = $('<div class="cw-swatch" />').appendTo(_nodes.$hueInput)
+	_nodes.$hueMarker = $('<div class="cw-marker" />').appendTo(_nodes.$hueInput)
+	_nodes.$slSwatch  = $('<div class="cw-swatch" />').appendTo(_nodes.$slInput)
+	_nodes.$slMarker  = $('<div class="cw-marker" />').appendTo(_nodes.$slInput)
 
 	this._update() # draw wheels with variables set as initialised
 
