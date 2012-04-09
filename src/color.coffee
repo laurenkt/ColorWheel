@@ -1,7 +1,6 @@
-this.cw = {}
-
 class cw.Color
-	isColor: -> true
+	constructor: ->
+		@isColor = yes
 
 class cw.RGB extends cw.Color
 	@names = {
@@ -53,14 +52,15 @@ class cw.RGB extends cw.Color
 	}
 
 	constructor: (@r, @g, @b) ->
+		super
 	
-	isTransparent: =>
+	isTransparent: ->
 		not (@r? or @g? or @b?)
 	
-	toRGB: =>
+	toRGB: ->
 		new cw.RGB(@r, @g, @b)
 
-	toHSL: =>
+	toHSL: ->
 		if this.isTransparent() then return new cw.HSL()
 
 		max = Math.max @r, @g, @b
@@ -81,12 +81,12 @@ class cw.RGB extends cw.Color
 			new cw.HSL(h, s, l)
 	
 	# plain obj with components in the form 0..255 rather than 0..1
-	to24Bit: =>
+	to24Bit: ->
 		r: Math.round @r*255
 		g: Math.round @g*255
 		b: Math.round @b*255
 
-	toString: =>
+	toString: ->
 		if this.isTransparent()
 			'transparent'
 		else # convert to #aabbcc hex representation
@@ -120,17 +120,18 @@ class cw.RGB extends cw.Color
 
 class cw.HSL extends cw.Color
 	constructor: (@h, @s, @l) ->
+		super
 
-	isPartial: =>
+	isPartial: ->
 		not (@h? and @s? and @l?)
 	
-	isTransparent: =>
+	isTransparent: ->
 		not (@h? or @s? or @l?)
 
-	toHSL: =>
+	toHSL: ->
 		new cw.HSL(@h, @s, @l)
 
-	toRGB: =>
+	toRGB: ->
 		if this.isTransparent() then return new cw.RGB()
 
 		h = @h / 60; # convert from circlular to hexagonal representation, h represents side
@@ -155,7 +156,7 @@ class cw.HSL extends cw.Color
 
 		new cw.RGB(r+min, g+min, b+min) # RGB components equally lightened by smallest component
 
-	toString: =>
+	toString: ->
 		this.toRGB().toString()
 
 	@fromString: (string) ->
