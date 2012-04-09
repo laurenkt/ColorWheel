@@ -1,101 +1,109 @@
 # Color wheel functionality implemented in ColorWheel object
-cw.ColorWheel = (options) ->
-	options = $.extend({
-		callback: null,
-		defaultColor: new cw.HSL(),
-		inset: 10,
-		allowPartialSelection: true,
-		allowHueSelection: true,
-		allowSLSelection: true,
-		animationTime: 200,
-		pingEnable: false,
-		pingQueue: 'ping.cw',
-		pingTime: 500
-	}, options)
+class cw.ColorWheel
+	constructor: (options) ->
+		@options = $.extend({
+			callback: null,
+			defaultColor: new cw.HSL(),
+			inset: 10,
+			allowPartialSelection: true,
+			allowHueSelection: true,
+			allowSLSelection: true,
+			animationTime: 200,
+			pingEnable: false,
+			pingQueue: 'ping.cw',
+			pingTime: 500
+		}, options)
 
-	# Private variables
+		@_hsl = @options.defaultColor.toHSL()
+		@_selected = 'none'
+		
+		@callback = @options.callback
 
-	_hsl = options.defaultColor.toHSL()
-	_callback = options.callback
-	_nodes = {}
-	_selected = 'none'
+		@$root    = $('<div class="cw-colorwheel" />')
+		@$hue     = $('<div class="cw-h" />').appendTo @$root
+		@$sl      = $('<div class="cw-sl" />').appendTo @$root
+		@swatches =
+			$hue:    $('<div class="cw-swatch" />').appendTo @$hue
+			$sl:     $('<div class="cw-marker" />').appendTo @$hue
+		@markers  =
+			$hue:    $('<div class="cw-swatch" />').appendTo @$sl
+			$sl:     $('<div class="cw-marker" />').appendTo @$sl
 
-	# Private functions
+		this._update() # draw wheels with variables set as initialised
 
-	_coordsRelativeToCenter = (x, y) ->
-		offset = _nodes.$root.offset()
-		x: (x - offset.left) - _nodes.$root.width()/2
-		y: (y - offset.top) - _nodes.$root.height()/2
+		# wait on user input
+		@$root.bind('mousedown.cw', this._onColorMouseDown)
 
-	_markerCoordsForHue = (hue) ->
-		wheelRadius = _nodes.$hueInput.width() / 2
-		markerRailRadius = wheelRadius - options.inset
+	_coordsRelativeToCenter: (x, y) ->
+		offset = @$root.offset()
+		x: x - offset.left - @$root.width()/2
+		y: y - offset.top - @$root.height()/2
+
+	_markerCoordsForHue: (hue) ->
+		wheelRadius = @$hue.width() / 2
+		markerRailRadius = wheelRadius - @options.inset
 		hue *= Math.PI/180; # convert to radians
 		x: Math.round Math.sin(hue) * markerRailRadius + wheelRadius
 		y: Math.round -Math.cos(hue) * markerRailRadius + wheelRadius
 
-	_markerCoordsForSL = (saturation, lightness) ->
-		x: Math.round _nodes.$slInput.width() * (1 - saturation)
-		y: Math.round _nodes.$slInput.height() * (1 - lightness)
+	_markerCoordsForSL: (saturation, lightness) ->
+		x: Math.round @$sl.width() * (1 - saturation)
+		y: Math.round @$sl.height() * (1 - lightness)
 
-	_ping = (enable) ->
-		if (!options.pingEnable) then return
+	_ping: (enable = true) =>
+		if (!@options.pingEnable) then return
 
-		animOptions = {queue:options.pingQueue, duration:options.pingTime}
+		animOptions = {queue:@options.pingQueue, duration:@options.pingTime}
 
-		cssBoxShadow = (blur, alpha) ->
-			{r, g, b} = (new cw.HSL(_hsl.h, 1, .5)).toRGB().to24Bit()
+		cssBoxShadow = (blur, alpha) =>
+			{r, g, b} = (new cw.HSL(@_hsl.h, 1, .5)).toRGB().to24Bit()
 			boxShadow: "0 0 #{blur}px rgba(#{r},#{g},#{b},#{alpha})"
 
-		_nodes.$slInput.stop(options.pingQueue, true)
+		@$sl.stop(@options.pingQueue, true)
 	
 		if enable
 			# looper function
-			do ->
-				_nodes.$slInput
+			do =>
+				@$sl
 					.animate(cssBoxShadow(20, 1), animOptions)
 					.animate(cssBoxShadow(15, .5), animOptions)
-					.queue(options.pingQueue, arguments.callee)
-					.dequeue(options.pingQueue)
+					.queue(@options.pingQueue, arguments.callee)
+					.dequeue(@options.pingQueue)
 		else
-			_nodes.$slInput
+			@$sl
 				.animate(cssBoxShadow(5, 0), animOptions)
-				.dequeue(options.pingQueue)
+				.dequeue(@options.pingQueue)
 
-	# Public methods (methods prefixed with underscore intended for internal use only)
-
-	this.setCallback = (f) -> _callback = f
-
-	this.setHSL = (hsl) ->
-		unless options.allowPartialSelection
+	getHSL: -> @_hsl
+	setHSL: (hsl) ->
+		unless @options.allowPartialSelection
 			if hsl.isPartial()
 				throw new Error("Cannot use partial HSL object with allowPartialSelection option disabled")
 
-		_hsl = hsl
+		@_hsl = hsl
 		this._update()
-		_nodes.$root.trigger('change', this)
+		@$root.trigger('change', this)
 
-	this.getHSL = -> _hsl
+	isHueSelected: ->
+		@_hsl.h?
+	isSLSelected: ->
+		@_hsl.s? and @_hsl.l?
 
-	this.getRoot = -> _nodes.$root
+	canSetHue: ->
+		@options.allowHueSelection
+	canSetSL: ->
+		@options.allowSLSelection and (not @options.allowPartialSelection or this.isHueSelected())
 
-	this.isHueSelected = -> _hsl.h?
-	this.isSLSelected = -> _hsl.s? and _hsl.l?
-
-	this.canSetHue = -> options.allowHueSelection
-	this.canSetSL = ->
-		options.allowSLSelection and (!options.allowPartialSelection or this.isHueSelected())
-
-	this._onColorMouseDown = (e) =>
+	_onColorMouseDown: (e) =>
 		# Set which area is being clicked
-		coords = _coordsRelativeToCenter(e.pageX, e.pageY)
-		if (Math.abs(coords.x) > _nodes.$slInput.width() / 2) or (Math.abs(coords.y) > _nodes.$slInput.height() / 2)
+		coords = this._coordsRelativeToCenter(e.pageX, e.pageY)
+		if (Math.abs(coords.x) > @$sl.width()/2) or (Math.abs(coords.y) > @$sl.height()/2)
 			if this.canSetHue()
-				_selected = 'ring'
+				@_selected = 'ring'
 		else if this.canSetSL()
-			_selected = 'box'
+			@_selected = 'box'
 
-		unless _selected == 'none'
+		unless @_selected == 'none'
 			# Capture mouse
 			$(document).bind('mousemove.cw', this._onDocumentDrag)
 			           .bind('mouseup.cw', this._onDocumentMouseUp)
@@ -103,20 +111,20 @@ cw.ColorWheel = (options) ->
 			# Pass event on to drag handler
 			this._onDocumentDrag(e)
 
-	this._onDocumentMouseUp = (e) =>
+	_onDocumentMouseUp: (e) =>
 		$(document).unbind('mousemove.cw')
 		           .unbind('mouseup.cw')
 
-		_selected = 'none'
+		@_selected = 'none'
 		
 		e.preventDefault()
 
-	this._onDocumentDrag = (e) =>
-		coords = _coordsRelativeToCenter(e.pageX, e.pageY)
-		h = _hsl.h; s = _hsl.s; l = _hsl.l
+	_onDocumentDrag: (e) =>
+		coords = this._coordsRelativeToCenter(e.pageX, e.pageY)
+		h = @_hsl.h; s = @_hsl.s; l = @_hsl.l
 
 		# Set new HSL parameters
-		switch _selected
+		switch @_selected
 			when 'ring'
 				toDegrees = (radians) -> radians * 180/Math.PI
 				circular = (position) -> (position + 360) % 360 # i.e. f(90) -> 90; f(-90) -> 270
@@ -126,11 +134,11 @@ cw.ColorWheel = (options) ->
 			when 'box'
 				asPercentage = (n) -> Math.max(0, Math.min(1, n)) # limits number to between 0 and 1
 
-				s = asPercentage .5 - coords.x/_nodes.$slInput.width()
-				l = asPercentage .5 - coords.y/_nodes.$slInput.height()
+				s = asPercentage .5 - coords.x/@$sl.width()
+				l = asPercentage .5 - coords.y/@$sl.height()
 
-		if _callback?
-			response = do $.proxy(_callback, this, new cw.HSL(h, s, l))
+		if @callback?
+			response = do $.proxy(@callback, this, new cw.HSL(h, s, l)) # invoke callback with 'this' context
 
 		unless response == false
 			if response?.isColor()
@@ -140,65 +148,48 @@ cw.ColorWheel = (options) ->
 				
 		e.preventDefault()
 
-	this._update = ->
+	_update: ->
 		if this.canSetHue()
-			_nodes.$hueInput.show()
+			@$hue.show()
 
 			if this.isHueSelected()
-				markerCoords = _markerCoordsForHue(_hsl.h)
-				_nodes.$hueSwatch
-					.css('background-color', new cw.HSL(_hsl.h, 1, .5))
-					.add(_nodes.$hueMarker)
+				markerCoords = this._markerCoordsForHue(@_hsl.h)
+				@swatches.$hue
+					.css('background-color', new cw.HSL(@_hsl.h, 1, .5))
+					.add(@markers.$hue)
 					.css({left:markerCoords.x+'px', top:markerCoords.y+'px'})
 					.show()
 			else
-				_nodes.$hueSwatch.hide()
-				_nodes.$hueMarker.hide()
+				@swatches.$hue.hide()
+				@markers.$hue.hide()
 		else
-			_nodes.$hueMarker.hide()
-			_nodes.$hueSwatch.hide()
-			_nodes.$hueInput.hide()
+			@markers.$hue.hide()
+			@swatches.$hue.hide()
+			@$hue.hide()
 
 		if this.canSetSL()
-			_nodes.$slInput
-				.css('background-color', new cw.HSL(_hsl.h, 1, .5))
-				.fadeIn(options.animationTime)
+			@$sl
+				.css('background-color', new cw.HSL(@_hsl.h, 1, .5))
+				.fadeIn(@options.animationTime)
 
-			_ping(false)
+			this._ping false
 
 			if this.isSLSelected()
-				markerCoords = _markerCoordsForSL(_hsl.s, _hsl.l)
+				markerCoords = this._markerCoordsForSL(@_hsl.s, @_hsl.l)
 
-				_nodes.$slSwatch
-					.css('background-color', _hsl)
-					.add(_nodes.$slMarker)
+				@swatches.$sl
+					.css('background-color', @_hsl)
+					.add(@markers.$sl)
 					.css({left:markerCoords.x+'px', top:markerCoords.y+'px'})
 					.show()
 			else
-				_ping(true)
-				_nodes.$slSwatch.hide()
-				_nodes.$slMarker.hide()
+				this._ping()
+				@swatches.$sl.hide()
+				@markers.$sl.hide()
 		else
-			_nodes.$slInput.hide()
-			_nodes.$slMarker.hide()
-			_nodes.$slSwatch.hide()
-
-	# Initialisation
-
-	_nodes.$root      = $('<div class="cw-colorwheel" />')
-	_nodes.$hueInput  = $('<div class="cw-h" />').appendTo(_nodes.$root)
-	_nodes.$slInput   = $('<div class="cw-sl" />').appendTo(_nodes.$root)
-	_nodes.$hueSwatch = $('<div class="cw-swatch" />').appendTo(_nodes.$hueInput)
-	_nodes.$hueMarker = $('<div class="cw-marker" />').appendTo(_nodes.$hueInput)
-	_nodes.$slSwatch  = $('<div class="cw-swatch" />').appendTo(_nodes.$slInput)
-	_nodes.$slMarker  = $('<div class="cw-marker" />').appendTo(_nodes.$slInput)
-
-	this._update() # draw wheels with variables set as initialised
-
-	# wait on user input
-	_nodes.$root.bind('mousedown.cw', this._onColorMouseDown)
-
-	this
+			@$sl.hide()
+			@swatches.$sl.hide()
+			@markers.$sl.hide()
 
 # allows using $(':color-wheel') to find all elements that have had a ColorWheel
 # appended with $(el).colorWheel();
@@ -212,6 +203,6 @@ $.fn.colorWheel = (options) ->
 		colorWheel = new cw.ColorWheel(options)
 		$(this)
 			.data('colorWheel.cw', colorWheel)
-			.append(colorWheel.getRoot())
+			.append(colorWheel.$root)
 
 this.cw = cw # Set global reference
