@@ -1,23 +1,23 @@
 # Color wheel functionality implemented in ColorWheel object
 class cw.ColorWheel
 	constructor: (options) ->
-		@options = $.extend({
-			callback: null,
-			defaultColor: new cw.HSL(),
-			inset: 10,
-			allowPartialSelection: true,
-			allowHueSelection: true,
-			allowSLSelection: true,
-			animationTime: 200,
-			hintEnable: false,
-			hintQueue: 'hint.cw',
+		@options = $.extend(
+			callback: null
+			defaultColor: new cw.HSL()
+			inset: 10
+			allowPartialSelection: true
+			allowHueSelection: true
+			allowSLSelection: true
+			animationTime: 200
+			hintEnable: false
+			hintQueue: 'hint.cw'
 			hintTime: 500
-		}, options)
+		, options)
 
 		@_hsl = if @options.defaultColor?.isColor
 			@options.defaultColor.toHSL()
 		else
-			cw.RGB.fromString(@options.defaultColor).toHSL()
+			cw.HSL.fromString @options.defaultColor
 
 		@_selected = 'none'
 		
@@ -34,22 +34,9 @@ class cw.ColorWheel
 		this.redraw() # draw wheels with variables set as initialised
 
 		# wait on user input
-		@$root.bind('mousedown.cw', this._onColorMouseDown)
-
-	_coordsRelativeToCenter: (x, y) ->
-		offset = @$root.offset()
-		x: x - offset.left - @$root.width()/2
-		y: y - offset.top - @$root.height()/2
-
-	_markerCoordsForHue: (hue) ->
-		outerRadius = @$hue.width()/2
-		innerRadius = outerRadius - @options.inset
-		x: Math.round (Math.sin(toRadians hue) * innerRadius) + outerRadius
-		y: Math.round (-Math.cos(toRadians hue) * innerRadius) + outerRadius
-
-	_markerCoordsForSL: (saturation, lightness) ->
-		x: Math.round @$sl.width() * (1 - saturation)
-		y: Math.round @$sl.height() * (1 - lightness)
+		@$root.bind('mousedown.cw', this._onMouseDown)
+		@$hue.bind('mousedown.cw', this._onHueMouseDown)
+		@$sl.bind('mousedown.cw', this._onSLMouseDown)
 
 	hintSL: (onOrOff = on) =>
 		if not @options.hintEnable then return
@@ -95,43 +82,47 @@ class cw.ColorWheel
 	canSetSL: ->
 		@options.allowSLSelection and (not @options.allowPartialSelection or this.isHueSelected())
 
-	_onColorMouseDown: (e) =>
-		# Set which area is being clicked
-		xy = this._coordsRelativeToCenter(e.pageX, e.pageY)
-		if Math.abs(xy.x) > @$sl.width()/2 or Math.abs(xy.y) > @$sl.height()/2
-			if this.canSetHue()
-				@_selected = 'ring'
-		else if this.canSetSL()
-			@_selected = 'box'
+	_onHueMouseDown: =>
+		@_selected = 'ring'
+		
+	_onSLMouseDown: =>
+		@_selected = 'box'
 
-		unless @_selected is 'none'
+	_onMouseDown: (e) =>
+		if @_selected isnt 'none'
 			# Capture mouse
-			$(document).bind('mousemove.cw', this._onDocumentDrag)
-			           .bind('mouseup.cw', this._onDocumentMouseUp)
+			$(document)
+				.bind('mousemove.cw', this._onDocumentDrag)
+				.bind('mouseup.cw', this._onDocumentMouseUp)
 
 			# Pass event on to drag handler
 			this._onDocumentDrag(e)
 
+		e.preventDefault()
+
 	_onDocumentMouseUp: (e) =>
-		$(document).unbind('mousemove.cw')
-		           .unbind('mouseup.cw')
+		$(document)
+			.unbind('mousemove.cw')
+			.unbind('mouseup.cw')
 
 		@_selected = 'none'
 		
 		e.preventDefault()
 
 	_onDocumentDrag: (e) =>
-		xy = this._coordsRelativeToCenter(e.pageX, e.pageY)
+		# Find x/y coords from center
+		x = e.pageX - @$root.offset().left - @$root.width()/2
+		y = e.pageY - @$root.offset().top - @$root.height()/2
 		h = @_hsl.h; s = @_hsl.s; l = @_hsl.l
 
 		# Set new HSL parameters
 		switch @_selected
 			when 'ring'
-				h = circleWrap toDegrees Math.atan2(xy.x, -xy.y)
+				h = circleWrap toDegrees Math.atan2(x, -y)
 
 			when 'box'
-				s = asPercentage .5 - xy.x/@$sl.width()
-				l = asPercentage .5 - xy.y/@$sl.height()
+				s = asPercentage .5 - x/@$sl.width()
+				l = asPercentage .5 - y/@$sl.height()
 
 		if @options.callback?
 			response = do $.proxy(@options.callback, this, new cw.HSL(h, s, l)) # invoke callback with 'this' context
@@ -145,44 +136,44 @@ class cw.ColorWheel
 		e.preventDefault()
 
 	redraw: ->
-		if this.canSetHue()
-			@$hue.show()
+		@$hue.toggle this.canSetHue()
 
-			if this.isHueSelected()
-				xy = this._markerCoordsForHue(@_hsl.h)
-				@swatches.$hue
-					.css('background-color', new cw.HSL(@_hsl.h, 1, .5))
-					.add(@markers.$hue)
-					.css({left:xy.x+'px', top:xy.y+'px'})
-					.show()
-			else
-				@swatches.$hue.hide()
-				@markers.$hue.hide()
+		if this.isHueSelected()
+			outerRadius = @$hue.width()/2
+			innerRadius = outerRadius - @options.inset
+
+			position =
+				top: Math.round (-Math.cos(toRadians @_hsl.h) * innerRadius) + outerRadius
+				left: Math.round (Math.sin(toRadians @_hsl.h) * innerRadius) + outerRadius
+
+			@swatches.$hue
+				.css('background-color', new cw.HSL(@_hsl.h, 1, .5))
+				.add(@markers.$hue)
+				.css(position)
+				.show()
 		else
-			@markers.$hue.hide()
 			@swatches.$hue.hide()
-			@$hue.hide()
+			@markers.$hue.hide()
 
 		if this.canSetSL()
 			@$sl
 				.css('background-color', new cw.HSL(@_hsl.h, 1, .5))
 				.fadeIn(@options.animationTime)
-
-			this.hintSL off
-
-			if this.isSLSelected()
-				xy = this._markerCoordsForSL(@_hsl.s, @_hsl.l)
-
-				@swatches.$sl
-					.css('background-color', @_hsl)
-					.add(@markers.$sl)
-					.css({left:xy.x+'px', top:xy.y+'px'})
-					.show()
-			else
-				this.hintSL on
-				@swatches.$sl.hide()
-				@markers.$sl.hide()
 		else
 			@$sl.hide()
+
+		if this.isSLSelected()
+			position =
+				top: Math.round @$sl.height() * (1 - @_hsl.l)
+				left: Math.round @$sl.width() * (1 - @_hsl.s)
+			
+			@swatches.$sl
+				.css('background-color', @_hsl)
+				.add(@markers.$sl)
+				.css(position)
+				.show()
+		else
 			@swatches.$sl.hide()
 			@markers.$sl.hide()
+		
+		this.hintSL(this.canSetSL() and not this.isSLSelected())

@@ -114,9 +114,9 @@ class cw.RGB extends cw.Color
 		if string.toLowerCase() is 'transparent'
 			new cw.RGB()
 		else if string[0] is '#'
-			@fromHex(string)
+			@fromHex string
 		else
-			@fromName(string)
+			@fromName string
 
 class cw.HSL extends cw.Color
 	constructor: (@h, @s, @l) ->
