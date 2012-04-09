@@ -41,12 +41,11 @@ cw.ColorWheel = (options) ->
 	_ping = (enable) ->
 		if (!options.pingEnable) then return
 
-		rgb = (new cw.HSL(_hsl.h, 1, .5)).toRGB()
 		animOptions = {queue:options.pingQueue, duration:options.pingTime}
 
 		cssBoxShadow = (blur, alpha) ->
-			to24Bit = (n) -> Math.round(n*255)
-			boxShadow: "0 0 #{blur}px rgba(#{to24Bit rgb.r},#{to24Bit rgb.g},#{to24Bit rgb.b},#{alpha})"
+			{r, g, b} = (new cw.HSL(_hsl.h, 1, .5)).toRGB().to24Bit()
+			boxShadow: "0 0 #{blur}px rgba(#{r},#{g},#{b},#{alpha})"
 
 		_nodes.$slInput.stop(options.pingQueue, true)
 	
@@ -85,12 +84,7 @@ cw.ColorWheel = (options) ->
 
 	this.canSetHue = -> options.allowHueSelection
 	this.canSetSL = ->
-		if !options.allowSLSelection then return false
-
-		if options.allowPartialSelection
-			this.isHueSelected()
-		else
-			true
+		options.allowSLSelection and (!options.allowPartialSelection or this.isHueSelected())
 
 	this._onColorMouseDown = (e) =>
 		# Set which area is being clicked
@@ -104,14 +98,14 @@ cw.ColorWheel = (options) ->
 		unless _selected == 'none'
 			# Capture mouse
 			$(document).bind('mousemove.cw', this._onDocumentDrag)
-					   .bind('mouseup.cw', this._onDocumentMouseUp)
+			           .bind('mouseup.cw', this._onDocumentMouseUp)
 
 			# Pass event on to drag handler
 			this._onDocumentDrag(e)
 
 	this._onDocumentMouseUp = (e) =>
 		$(document).unbind('mousemove.cw')
-				   .unbind('mouseup.cw')
+		           .unbind('mouseup.cw')
 
 		_selected = 'none'
 		
@@ -217,11 +211,10 @@ cw.ColorWheel = (options) ->
 
 	this
 
-
 # allows using $(':color-wheel') to find all elements that have had a ColorWheel
 # appended with $(el).colorWheel();
 $.expr[':']['color-wheel'] = (el) ->
-	typeof $(el).data('colorWheel.cw') != 'undefined'
+	$(el).data('colorWheel.cw')?
 
 # automatically appends a colorwheel to the selected node, and stores a
 # reference to it in the node's data attribute

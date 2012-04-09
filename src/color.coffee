@@ -63,35 +63,36 @@ class cw.RGB extends cw.Color
 	toHSL: =>
 		if this.isTransparent() then return new cw.HSL()
 
-		max = Math.max(@r, @g, @b)
-		min = Math.min(@r, @g, @b)
+		max = Math.max @r, @g, @b
+		min = Math.min @r, @g, @b
 		chroma = max - min
 		
-		l = (max + min)/2 # average of largest and smallest components
+		if chroma is 0
+			new cw.HSL(undefined, 0, max) # achromatic
+		else
+			h = 60 * switch max # determine where on which side h lies, and *60 to convert to circular
+				when @r then (@g - @b)/chroma % 6
+				when @g then (@b - @r)/chroma + 2
+				when @b then (@r - @g)/chroma + 4
 
-		if (chroma == 0) then return new cw.HSL(undefined, 0, l) # achromatic
+			l = (max + min)/2 # average of largest and smallest components
+			s = chroma/(1 - Math.abs(2*l - 1))
 
-		h = switch max
-			when @r then (@g - @b)/chroma % 6
-			when @g then (@b - @r)/chroma + 2
-			when @b then (@r - @g)/chroma + 4
-
-		h *= 60; # convert from hexagonal representaiton to circular
-		s = chroma/(1 - Math.abs(2*l - 1))
-
-		new cw.HSL(h, s, l)
+			new cw.HSL(h, s, l)
 	
+	# plain obj with components in the form 0..255 rather than 0..1
+	to24Bit: =>
+		r: Math.round @r*255
+		g: Math.round @g*255
+		b: Math.round @b*255
+
 	toString: =>
-		if this.isTransparent() then return 'transparent'
-
-		toHex = (rgbValue) ->
-			rgbValue *= 255 # convert to 24-bit color space
-			if rgbValue < 16
-				'0' + Math.round(rgbValue).toString(16)
-			else
-				Math.round(rgbValue).toString(16)
-
-		"##{toHex @r}#{toHex @g}#{toHex @b}"
+		if this.isTransparent()
+			'transparent'
+		else # convert to #aabbcc hex representation
+			{r, g, b} = this.to24Bit()
+			toByte = (value) -> ('0' + value.toString(16)).slice(-2)
+			"##{toByte r}#{toByte g}#{toByte b}"
 	
 	@fromName: (name) ->
 		[r, g, b] = @names[name.toLowerCase()]
@@ -110,9 +111,9 @@ class cw.RGB extends cw.Color
 		new cw.RGB(byte(0), byte(1), byte(2))
 
 	@fromString: (string) ->
-		if string.toLowerCase() == 'transparent'
+		if string.toLowerCase() is 'transparent'
 			new cw.RGB()
-		else if string[0] == '#'
+		else if string[0] is '#'
 			@fromHex(string)
 		else
 			@fromName(string)
@@ -132,24 +133,25 @@ class cw.HSL extends cw.Color
 	toRGB: =>
 		if this.isTransparent() then return new cw.RGB()
 
-		# sensible defaults for partial hsl value
+		h = @h / 60; # convert from circlular to hexagonal representation, h represents side
+
+		# sensible defaults for missing sl values
 		s = @s ? 1
 		l = @l ? 0.5
-
-		h = @h / 60; # convert from circlular to hexagonal representation, h represents side
 
 		chroma = (1 - Math.abs(2*l - 1)) * s
 		min = l - chroma/2 # find smallest component
 		mid = chroma * (1 - Math.abs(h%2 - 1)) # find middle component
 		
-		[r, g, b] =
-		if      0 <= h < 1 then [chroma, mid, 0]
-		else if 1 <= h < 2 then [mid, chroma, 0]
-		else if 2 <= h < 3 then [0, chroma, mid]
-		else if 3 <= h < 4 then [0, mid, chroma]
-		else if 4 <= h < 5 then [mid, 0, chroma]
-		else if 5 <= h < 6 then [chroma, 0, mid]
-		else [l, l, l] # default
+		# should be one of 6 sides of the hexagon, or NaN
+		[r, g, b] = switch Math.floor(h)
+			when 0 then [chroma, mid, 0]
+			when 1 then [mid, chroma, 0]
+			when 2 then [0, chroma, mid]
+			when 3 then [0, mid, chroma]
+			when 4 then [mid, 0, chroma]
+			when 5 then [chroma, 0, mid]
+			else [l, l, l] # no hue-achromatic
 
 		new cw.RGB(r+min, g+min, b+min) # RGB components equally lightened by smallest component
 
