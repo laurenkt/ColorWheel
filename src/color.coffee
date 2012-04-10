@@ -53,7 +53,7 @@ class cw.RGB extends cw.Color
 			# can be of form #rgb or #rrggbb
 			switch string.length
 				when 7 then f = (i) -> parseInt(string.substring(i*2 + 1, i*2 + 3), 16) / 255
-				when 4 then f = (i) -> parseInt(string[i+1], 16) / 15
+				when 4 then f = (i) -> parseInt(string.charAt(i+1), 16) / 15
 				else throw new Error("CSS color '#{string}' not valid")
 			
 			new cw.RGB(f(0), f(1), f(2))
