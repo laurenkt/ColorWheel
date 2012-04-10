@@ -1,7 +1,7 @@
 .cw-colorwheel {
 	position: relative;
-    width: 200px;
-    height: 200px;
+	width: 200px;
+	height: 200px;
 	cursor: crosshair;
 	-moz-user-select: none;
 	-webkit-user-select: none;
@@ -16,17 +16,17 @@
 }
 
 .cw-colorwheel .cw-sl {
-    position: absolute;
+	position: absolute;
 	top: 50px;
 	left: 50px;
 	width: 100px;
 	height: 100px;
 	background: white url(cw-sprites.png) no-repeat 0 -200px;
-    box-shadow: 0 0 0 rgba(0,0,0,0);
+	box-shadow: 0 0 0 rgba(0,0,0,0);
 }
 
 .cw-colorwheel .cw-marker {
-    position: absolute;
+	position: absolute;
 	width: 16px;
 	height: 16px;
 	margin: -7px 0 0 -7px;
@@ -34,8 +34,8 @@
 }
 
 .cw-colorwheel .cw-swatch {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    margin: -4px 0 0 -4px;
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	margin: -4px 0 0 -4px;
 }
