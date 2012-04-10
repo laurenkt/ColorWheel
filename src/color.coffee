@@ -45,18 +45,18 @@ class cw.RGB extends cw.Color
 			{r, g, b} = this.to24Bit()
 			toByte = (value) -> ('0' + value.toString(16)).slice(-2)
 			"##{toByte r}#{toByte g}#{toByte b}"
-
+	
 	@fromString: (string) ->
 		if string.toLowerCase() is 'transparent'
 			new cw.RGB()
 		else
 			# can be of form #rgb or #rrggbb
 			switch string.length
-				when 7 then byte = (i) -> parseInt(string.substring(i*2 + 1, i*2 + 3), 16) / 255
-				when 4 then byte = (i) -> parseInt(string[i+1], 16) / 15
+				when 7 then f = (i) -> parseInt(string.substring(i*2 + 1, i*2 + 3), 16) / 255
+				when 4 then f = (i) -> parseInt(string[i+1], 16) / 15
 				else throw new Error("CSS color '#{string}' not valid")
 			
-			new cw.RGB(byte(0), byte(1), byte(2))
+			new cw.RGB(f(0), f(1), f(2))
 
 class cw.HSL extends cw.Color
 	constructor: (@h, @s, @l) ->
