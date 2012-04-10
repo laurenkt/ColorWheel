@@ -3,9 +3,9 @@ ColorWheel
 
 **Warning**: this isn't ready for primetime yet - some features aren't fully implemented, and test coverage is incomplete.
 
-A JavaScript hue/saturation/lightness color wheel for jQuery written in CoffeeScript.
+A JavaScript **hue/saturation/lightness color wheel** for jQuery written in CoffeeScript.
 
-_Note_: I do accept pull requests (so long as they are reasonable, and do not cause any tests to fail)
+_Note: I do accept pull requests (so long as they are reasonable, and do not cause any tests to fail)_
 
 Features
 --------
@@ -22,26 +22,29 @@ Features
 Installation
 ------------
 
-As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself. This requires [CoffeeScript](http://coffeescript.org/) and [Rake](http://rake.rubyforge.org/).
+As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself (requires [CoffeeScript](http://coffeescript.org/) and [Rake](http://rake.rubyforge.org/)).
 
 	git clone git://github.com/Comaleaf/ColorWheel.git
 	cd ColorWheel
 	rake
 
-Or use `rake minify` for minified output (requires [Google Closure Compiler](https://developers.google.com/closure/compiler/)).
+Use `rake minify` for minified output (requires [Google Closure Compiler](https://developers.google.com/closure/compiler/)).
+
+Usage
+-----
 
 See the demo/ folder for usage examples, or:
 
-1. 	Ensure your page has a script element for jQuery. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
+1. Include jQuery on your page. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
 
-2. 	You need the `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`, include the first two in your page like so:
+2. You need `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`. Include the first two in your page like so:
 	
 		<link rel="stylesheet" href="cw-style.css" type="text/css">
 		<script type="text/javascript" src="cw-colorwheel.js"></script>
 	
 	Preferably in your `<head>` element, but definitely after jQuery.
 
-3. 	Use the jQuery plug-in to append a color wheel to an element:
+3. Use the jQuery plug-in to append a color wheel to an element:
 	
 		$('#someElement').colorWheel();
 	
@@ -57,12 +60,12 @@ See the demo/ folder for usage examples, or:
 
 To track changes you can either use the callback option (particularly if you want to allow/reject/alter the changes as they are made), or use the `change` event:
 
-	// example binds event to all color wheel parents
-	$(':color-wheel').on('change', function(e, colorWheel) {
+	// example binds event for to all color wheels
+	$(':color-wheel').bind('change', function(e, colorWheel) {
 		$('body').css('background-color', colorWheel.getHSL());
 	});
 
-Optionally, both methods allow specifying an object with initial parameters for the color wheel:
+Specify an object with initial parameters for the color wheel:
 
 	options = {
 		callback: null,              // a callback function
