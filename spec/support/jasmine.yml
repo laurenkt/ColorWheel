@@ -1,0 +1,16 @@
+src_files:
+  - demo/jquery.js
+  - cw-colorwheel.js
+
+stylesheets:
+  - cw-style.css
+
+helpers:
+  - helpers/*.*
+
+spec_files:
+  - *.spec.*
+
+src_dir:
+
+spec_dir: spec
