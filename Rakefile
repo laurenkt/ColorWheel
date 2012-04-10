@@ -30,13 +30,11 @@ task :jasmine => ['build'] do
 	require 'jasmine'
 	require 'spec/support/jasmine_config.rb'
 	
-	puts "your tests are here:"
-	puts "  http://localhost:8888/"
+	puts "your tests are at http://localhost:8888/:"
 	Jasmine::Config.new.start_server(8888)
- end
+end
 
 require 'jasmine-headless-webkit'
-
 Jasmine::Headless::Task.new('jasmine:headless') do |t|
 	t.colors = true
 	t.keep_on_error = true

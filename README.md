@@ -49,11 +49,18 @@ See the demo/ folder for usage examples, or:
 	
 		$('#someElement').data('colorWheel.cw').setHSL(new cw.HSL(120, 1, 0.5)); // sets the colorWheel to green
 	
-	Alternatively, create a color wheel yourself. You can access its root node with `colorWheel.getRoot()`
+	Alternatively, create a color wheel yourself. You can access its root DOM node with `colorWheel.$root`
 	
 		colorWheel = new cw.ColorWheel;
 		colorWheel.setHSL(new cw.HSL(240, 1, 0.5)); // sets the colorWheel to blue
 		$('#someElement').append(colorWheel.$root);
+
+To track changes you can either use the callback option (particularly if you want to allow/reject/alter the changes as they are made), or use the `change` event:
+
+	// example binds event to all color wheel parents
+	$(':color-wheel').on('change', function(e, colorWheel) {
+		$('body').css('background-color', colorWheel.getHSL());
+	});
 
 Optionally, both methods allow specifying an object with initial parameters for the color wheel:
 
@@ -90,14 +97,14 @@ Several color utility objects are provided (and used internally):
 
 Both of these implement the following methods:
 
-- `toString()` to convert to CSS hex color representation (#aabbcc)
-- `toHSL()` to create a new HSL object from this color
-- `toRGB()` to create a new RGB object from this color
-- `isTransparent()` determines if this object is considered fully transparent
+- `.toString()` to convert to CSS hex color representation (#aabbcc)
+- `.toHSL()` to create a new HSL object from this color
+- `.toRGB()` to create a new RGB object from this color
+- `.isTransparent()` determines if this object is considered fully transparent
 
 The HSL object also implements:
 
-- `isPartial()` determines if this object is a 'partial' HSL object (i.e. missing one or more of its hue, saturation, or lightness components).
+- `.isPartial()` determines if this object is a 'partial' HSL object (i.e. missing one or more of its hue, saturation, or lightness components).
 
 You can also initialise either of these objects with a CSS hex string using:
 
