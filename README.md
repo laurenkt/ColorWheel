@@ -35,9 +35,9 @@ Usage
 
 See the demo/ folder for usage examples, or:
 
-Include jQuery on your page. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
+**Include jQuery on your page**. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
 
-You need `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`. Include the first two in your page like so:
+**You need `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`**. **Include the first two in your page** like so:
 
 ```html	
 <link rel="stylesheet" href="cw-style.css" type="text/css">
@@ -46,16 +46,17 @@ You need `cw-colorwheel.js`, `cw-style.css`, and `cw-sprites.png`. Include the f
 
 Preferably in your `<head>` element, but definitely after jQuery.
 
-Use CW as a jQuery plug-in to append a color wheel to an element:
+**Use CW as a jQuery plug-in** to append a color wheel to an element:
 
 ```javascript
 $('#someElement').colorWheel();
 ```
 
-Access this created color wheel using the data attribute created for ColorWheel:
+Access this created color wheel using the `data` attribute created for ColorWheel:
 
 ```javascript
 $('#someElement').data('colorWheel.cw').setHSL(new cw.HSL(120, 1, 0.5)); // sets the colorWheel to green
+```
 
 Alternatively, create a color wheel yourself. You can access its root DOM node with `colorWheel.$root`
 
