@@ -26,16 +26,8 @@ task :minify => ['cw-colorwheel.min.js']
 
 task :default => ['build']
 
-task :jasmine => ['build'] do
-	require 'jasmine'
-	require 'spec/support/jasmine_config.rb'
-	
-	puts "your tests are at http://localhost:8888/:"
-	Jasmine::Config.new.start_server(8888)
-end
-
 require 'jasmine-headless-webkit'
-Jasmine::Headless::Task.new('jasmine:headless') do |t|
+Jasmine::Headless::Task.new('test') do |t|
 	t.colors = true
 	t.keep_on_error = true
 	t.jasmine_config = 'spec/support/jasmine.yml'
