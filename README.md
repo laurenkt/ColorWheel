@@ -3,7 +3,7 @@ ColorWheel
 
 **Warning**: this isn't ready for primetime yet - some features aren't fully implemented, and test coverage is incomplete.
 
-A hue/saturation/lightness color wheel for jQuery.
+A hue/saturation/lightness color wheel for jQuery written in CoffeeScript.
 
 _Note_: I do accept pull requests (so long as they are reasonable, and do not cause any tests to fail)
 
@@ -22,7 +22,15 @@ Features
 Installation
 ------------
 
-See the demo/ folder for an example, or:
+As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself. This requires [CoffeeScript](http://coffeescript.org/) and [Rake](http://rake.rubyforge.org/).
+
+	git clone git://github.com/Comaleaf/ColorWheel.git
+	cd ColorWheel
+	rake
+
+Or use `rake minify` for minified output (requires [Google Closure Compiler](https://developers.google.com/closure/compiler/)).
+
+See the demo/ folder for usage examples, or:
 
 1. 	Ensure your page has a script element for jQuery. (If you want the interface hinting for the S/L box, you also need [a jQuery plug-in to enable animating the box-shadow property](http://www.bitstorm.org/jquery/shadow-animation/) as jQuery core does not currently support this.)
 
@@ -39,19 +47,19 @@ See the demo/ folder for an example, or:
 	
 	Access this created color wheel using the data attribute created for ColorWheel:
 	
-		$('#someElement').data('colorWheel.cw').setHSL(cw.HSL(120, 1, 0.5)); // sets the colorWheel to green
+		$('#someElement').data('colorWheel.cw').setHSL(new cw.HSL(120, 1, 0.5)); // sets the colorWheel to green
 	
 	Alternatively, create a color wheel yourself. You can access its root node with `colorWheel.getRoot()`
 	
 		colorWheel = new cw.ColorWheel;
-		colorWheel.setHSL(cw.HSL(240, 1, 0.5)); // sets the colorWheel to blue
-		$('#someElement').append(colorWheel.getRoot());
+		colorWheel.setHSL(new cw.HSL(240, 1, 0.5)); // sets the colorWheel to blue
+		$('#someElement').append(colorWheel.$root);
 
 Optionally, both methods allow specifying an object with initial parameters for the color wheel:
 
 	options = {
 		callback: null, // a callback function
-		defaultColor: cw.HSL(), // the starting color for the wheel
+		defaultColor: new cw.HSL(), // the starting color for the wheel
 		inset: 10, // the amount the hue marker is inset from the edge of the wheel
 		allowPartialSelection: true, // whether the color wheel can have a hue set without an s/l set
 		pingEnable: false // whether the color wheel should hint the user to select an s/l when a hue is set (requires jQuery box-shadow animation plug-in)
@@ -65,25 +73,39 @@ Optionally, both methods allow specifying an object with initial parameters for 
 	
 	$('#someElement').colorWheel(options);
 
+If you do not want ColorWheel to use the global name 'cw', you can return that name to its original owner and use a new reference with the `noConflict` method:
+
+	CWLib = cw.noConflict()
+	# 'cw' now refers to what it did before CW was included,
+	# 'CWLib' can be used instead from this point
+
+If you have used jQuery's noConflict feature to rescind its control of the 'jQuery' identifier before you include jQuery, you can set CW to use a different jQuery identifier:
+
+	cw.jQuery(jQ) # where you are using jQ instead of 'jQuery'
+
 Utilities
 ---------
 
-Several utility functions are provided for those working with colors:
+Several color utility objects are provided (and used internally):
 
-- `cw.RGB(r, g, b)` creates an RGB object
-- `cw.HSL(h, s, l)` creates an HSL object
-- `cw.isRGB(c)` returns `true` iff `c` is an RGB object
-- `cw.isHSL(c)` returns `true` iff `c` is an HSL object
-- `cw.isColorString(c)` returns `true` iff `c` is a CSS color string
-- `cw.RGBToHSL(rgb)` converts an RGB object to an HSL object
-- `cw.RGBToString(rgb)` converts an RGB object to a CSS color string
-- `cw.HSLToRGB(hsl)` converts an HSL object to an RGB object
-- `cw.HSLToString(hsl)` converts an HSL object to a CSS color string
-- `cw.stringToRGB(string)` converts a CSS color string to an RGB object
-- `cw.stringToHSL(string)` converts a CSS color string to an HSL object
-- `cw.colorToRGB(c)` converts an RGB/HSL object or a CSS color string to an RGB object
-- `cw.colorToHSL(c)` converts an RGB/HSL object or a CSS color string to an HSL object
-- `cw.colorToString(c)` converts an RGB/HSL object or a CSS color string to a CSS color string
+- `new cw.RGB(r, g, b)` creates an RGB object
+- `new cw.HSL(h, s, l)` creates an RGB object
+
+Both of these implement the following methods:
+
+- `toString()` to convert to CSS hex color representation (#aabbcc)
+- `toHSL()` to create a new HSL object from this color
+- `toRGB()` to create a new RGB object from this color
+- `isTransparent()` determines if this object is considered fully transparent
+
+The HSL object also implements:
+
+- `isPartial()` determines if this object is a 'partial' HSL object (i.e. missing one or more of its hue, saturation, or lightness components).
+
+You can also initialise either of these objects with a CSS hex string using:
+
+- `cw.RGB.fromString(string)` and
+- `cw.HSL.fromString(string)` where string may be in the form '#aabbcc' or '#abc' or 'transparent'. 
 
 Licence
 -------
