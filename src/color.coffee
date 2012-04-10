@@ -79,22 +79,24 @@ class cw.HSL extends cw.Color
 		# sensible defaults for missing sl values
 		s = @s ? 1
 		l = @l ? 0.5
-
+		
 		chroma = (1 - Math.abs(2*l - 1)) * s
 		min = l - chroma/2 # find smallest component
 		mid = chroma * (1 - Math.abs(h%2 - 1)) # find middle component
 		
 		# should be one of 6 sides of the hexagon, or NaN
-		[r, g, b] = switch Math.floor(h)
-			when 0 then [chroma, mid, 0]
-			when 1 then [mid, chroma, 0]
-			when 2 then [0, chroma, mid]
-			when 3 then [0, mid, chroma]
-			when 4 then [mid, 0, chroma]
-			when 5 then [chroma, 0, mid]
-			else [l, l, l] # no hue-achromatic
-
-		new cw.RGB(r+min, g+min, b+min) # RGB components equally lightened by smallest component
+		if isNaN(h)
+			new cw.RGB(l, l, l) # no hue - achromatic
+		else
+			[r, g, b] = switch Math.floor(h)
+				when 0 then [chroma, mid, 0]
+				when 1 then [mid, chroma, 0]
+				when 2 then [0, chroma, mid]
+				when 3 then [0, mid, chroma]
+				when 4 then [mid, 0, chroma]
+				when 5 then [chroma, 0, mid]
+		
+			new cw.RGB(r+min, g+min, b+min) # RGB components equally lightened by smallest component
 
 	toString: ->
 		this.toRGB().toString()
