@@ -3,7 +3,7 @@ ColorWheel
 
 **Warning**: this isn't ready for primetime yet - some features aren't fully implemented, and test coverage is incomplete.
 
-A hue/saturation/lightness color wheel for jQuery written in CoffeeScript.
+A JavaScript hue/saturation/lightness color wheel for jQuery written in CoffeeScript.
 
 _Note_: I do accept pull requests (so long as they are reasonable, and do not cause any tests to fail)
 
@@ -58,30 +58,27 @@ See the demo/ folder for usage examples, or:
 Optionally, both methods allow specifying an object with initial parameters for the color wheel:
 
 	options = {
-		callback: null, // a callback function
-		defaultColor: new cw.HSL(), // the starting color for the wheel
-		inset: 10, // the amount the hue marker is inset from the edge of the wheel
+		callback: null,              // a callback function
+		defaultColor: new cw.HSL(),  // the starting color for the wheel
+		inset: 10,                   // the amount the hue marker is inset from the edge of the wheel
 		allowPartialSelection: true, // whether the color wheel can have a hue set without an s/l set
-		pingEnable: false // whether the color wheel should hint the user to select an s/l when a hue is set (requires jQuery box-shadow animation plug-in)
+		pingEnable: false            // whether the color wheel should hint the user to select an s/l
+		                             // when a hue is set (requires jQuery box-shadow animation plug-in)
 	}
 	
-	// then:
-	
+	// then either:
 	new cw.ColorWheel(options)
-	
-	// or:
-	
 	$('#someElement').colorWheel(options);
 
 If you do not want ColorWheel to use the global name 'cw', you can return that name to its original owner and use a new reference with the `noConflict` method:
 
 	CWLib = cw.noConflict()
-	# 'cw' now refers to what it did before CW was included,
-	# 'CWLib' can be used instead from this point
+	// 'cw' now refers to what it did before CW was included,
+	// 'CWLib' can be used instead from this point
 
 If you have used jQuery's noConflict feature to rescind its control of the 'jQuery' identifier before you include jQuery, you can set CW to use a different jQuery identifier:
 
-	cw.jQuery(jQ) # where you are using jQ instead of 'jQuery'
+	cw.jQuery(jQ) // where you are using jQ instead of 'jQuery'
 
 Utilities
 ---------
