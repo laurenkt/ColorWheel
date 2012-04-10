@@ -62,12 +62,12 @@ Optionally, both methods allow specifying an object with initial parameters for 
 		defaultColor: new cw.HSL(),  // the starting color for the wheel
 		inset: 10,                   // the amount the hue marker is inset from the edge of the wheel
 		allowPartialSelection: true, // whether the color wheel can have a hue set without an s/l set
-		pingEnable: false            // whether the color wheel should hint the user to select an s/l
+		hintEnable: false            // whether the color wheel should hint the user to select an s/l
 		                             // when a hue is set (requires jQuery box-shadow animation plug-in)
 	}
 	
 	// then either:
-	new cw.ColorWheel(options)
+	new cw.ColorWheel(options) // or:
 	$('#someElement').colorWheel(options);
 
 If you do not want ColorWheel to use the global name 'cw', you can return that name to its original owner and use a new reference with the `noConflict` method:
