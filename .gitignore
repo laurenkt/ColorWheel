@@ -1,5 +1,5 @@
 cw-colorwheel.js
-cw-colorwheel.min.js
+*.min.*
 .DS_Store
 jquery*.js
 .jhw-cache
