@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'rake/clean'
 
 files = [
@@ -11,11 +14,11 @@ files = [
 CLOBBER.include('*.js')
 
 file 'cw-colorwheel.js' => files do
-	sh "coffee -j cw-colorwheel.js -c %s" % files.join(' ')
+	sh "bundle exec coffee -j cw-colorwheel.js -c %s" % files.join(' ')
 end
 
 file 'cw-colorwheel.min.js' => ['cw-colorwheel.js'] do
-	sh "closure --js cw-colorwheel.js --js_output_file cw-colorwheel.min.js"
+	sh "bundle exec closure --js cw-colorwheel.js --js_output_file cw-colorwheel.min.js"
 end
 
 desc "Compile JS output from CoffeeScript"
@@ -26,9 +29,8 @@ task :minify => ['cw-colorwheel.min.js']
 
 task :default => ['build']
 
-require 'jasmine-headless-webkit'
-Jasmine::Headless::Task.new('test') do |t|
-	t.colors = true
-	t.keep_on_error = true
-	t.jasmine_config = 'spec/support/jasmine.yml'
+task :test do
+	sh "bundle exec jasmine-headless-webkit -j spec/support/jasmine.yml -c"
 end
+
+task :all => ['build', 'test', 'minify']

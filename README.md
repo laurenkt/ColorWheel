@@ -5,7 +5,7 @@ ColorWheel
 
 A JavaScript **hue/saturation/lightness color wheel** for jQuery written in CoffeeScript.
 
-_Note: I do accept pull requests (so long as they are reasonable, maintain coding style, and do not cause any tests to fail - run `rake && rake test` before submitting a pull request)_
+_Note: I do accept pull requests (so long as they are reasonable, maintain coding style, and do not cause any tests to fail - run `bundle exec rake && bundle exec rake test` before submitting a pull request)_
 
 Features
 --------
@@ -22,13 +22,18 @@ Features
 Installation
 ------------
 
-As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself (requires [CoffeeScript](http://coffeescript.org/) and [Rake](http://rake.rubyforge.org/)).
+As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself ([Bundler](http://gembundler.com/) used to manage dependencies).
 
 	git clone git://github.com/Comaleaf/ColorWheel.git
 	cd ColorWheel
-	rake
+	bundle install
+	bundle exec rake
 
-Use `rake minify` for minified output (requires [Google Closure Compiler](https://developers.google.com/closure/compiler/)).
+Additional build options:
+
+- `bundle exec rake minify` for minified output
+- `bundle exec rake test` to run the Jasmine tests headlessly
+- `bundle exec rake all` to build CW, run its tests, and then minify it
 
 Usage
 -----
