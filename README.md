@@ -22,12 +22,14 @@ Features
 Installation
 ------------
 
-As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself ([Bundler](http://gembundler.com/) used to manage dependencies).
+As ColorWheel is still 'alpha' software, there are currently no releases. To use it you must build CW yourself ([Bundler](http://gembundler.com/) used to manage dependencies):
 
-	git clone git://github.com/Comaleaf/ColorWheel.git
-	cd ColorWheel
-	bundle install
-	bundle exec rake
+```bash
+git clone "git://github.com/Comaleaf/ColorWheel.git"
+cd ColorWheel
+bundle install
+bundle exec rake
+```
 
 Additional build options:
 
