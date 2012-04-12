@@ -5,7 +5,7 @@ ColorWheel
 
 A JavaScript **hue/saturation/lightness color wheel** for jQuery written in CoffeeScript.
 
-_Note: I do accept pull requests (so long as they are reasonable, and do not cause any tests to fail)_
+_Note: I do accept pull requests (so long as they are reasonable, maintain coding style, and do not cause any tests to fail - run `rake && rake test` before submitting a pull request)_
 
 Features
 --------
@@ -84,7 +84,7 @@ options = {
 	inset: 10,                   // the amount the hue marker is inset from the edge of the wheel
 	allowPartialSelection: true, // whether the color wheel can have a hue set without an s/l set
 	hintEnable: false            // whether the color wheel should hint the user to select an s/l
-		                          // when a hue is set (requires jQuery box-shadow animation plug-in)
+	                             // when a hue is set (requires jQuery box-shadow animation plug-in)
 }
 
 // then either:
