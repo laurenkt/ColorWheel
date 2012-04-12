@@ -20,7 +20,7 @@ desc "Minify output"
 task :minify => ['cw-colorwheel.min.js', 'cw-style.min.css']
 
 desc "Run Jasmine tests"
-task :test do
+task :test => :default do
 	puts "* Running tests"
 	sh "jasmine-headless-webkit -cj spec/support/jasmine.yml"
 	puts "* Done"
@@ -40,10 +40,10 @@ end
 
 # Compilation rules
 
-file 'cw-colorwheel.js' => files do
+file 'cw-colorwheel.js' => files do |t|
 	puts "* Compiling CoffeeScript"
 	sh "bundle exec coffee -j cw-colorwheel.js -c %s" % files.join(' ')
-	puts "* Done"
+	puts "* Done (#{t.name})"
 end
 
 # Minify rules
@@ -51,7 +51,7 @@ end
 file 'cw-colorwheel.min.js' => 'cw-colorwheel.js' do |t|
 	puts "* Compressing Javascript"
 	sh "bundle exec closure --js #{t.prerequisites[0]} --js_output_file #{t.name}"
-	puts "* Done"
+	puts "* Done (#{t.name})"
 end
 
 file 'cw-style.min.css' => 'cw-style.css' do |t|
@@ -59,5 +59,5 @@ file 'cw-style.min.css' => 'cw-style.css' do |t|
 	require 'yuicompressor'
 	compressed = YUICompressor.compress_css(IO.read(t.prerequisites[0]))
 	File.open(t.name, 'w') { |f| f.write(compressed) }
-	puts "* Done"
+	puts "* Done (#{t.name})"
 end

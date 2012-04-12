@@ -5,7 +5,7 @@ ColorWheel
 
 A JavaScript **hue/saturation/lightness color wheel** for jQuery written in CoffeeScript.
 
-_Note: I do accept pull requests (so long as they are reasonable, maintain coding style, and do not cause any tests to fail - run `bundle exec rake && bundle exec rake test` before submitting a pull request)_
+_Note: I do accept pull requests (so long as they are reasonable, maintain coding style, and do not cause any tests to fail - run `bundle exec rake test` before submitting a pull request)_
 
 Features
 --------
@@ -33,7 +33,7 @@ bundle exec rake
 
 Additional build options:
 
-- `bundle exec rake minify` for minified output
+- `bundle exec rake minify` for minified JS and CSS output
 - `bundle exec rake test` to run the Jasmine tests
 - `bundle exec rake all` to build CW, run its tests, and then minify it
 
