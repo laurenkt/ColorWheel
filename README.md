@@ -34,7 +34,7 @@ bundle exec rake
 Additional build options:
 
 - `bundle exec rake minify` for minified output
-- `bundle exec rake test` to run the Jasmine tests headlessly
+- `bundle exec rake test` to run the Jasmine tests
 - `bundle exec rake all` to build CW, run its tests, and then minify it
 
 Usage
