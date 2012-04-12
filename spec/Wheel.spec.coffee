@@ -28,33 +28,50 @@ describe 'Wheel', ->
 			
 			expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
 
-	describe 'option:allowPartialSelection:true', ->
-		beforeEach ->
-			colorWheel = new cw.ColorWheel(allowPartialSelection: true);
+	describe '.canSetHue', ->
+		
+	describe '.canSetSL', ->
+		
+	describe '.isHueSelected', ->
+		
+	describe '.isSLSelected', ->
 
-		it "shouldn't allow S/L to be set until hue has been", ->
-			expect( colorWheel.canSetSL() ).toBe false
+	describe 'option.defaultColor', ->
+		
+	describe 'option.inset', ->
+	
+	describe 'option.allowHueSelection', ->
+	
+	describe 'option.allowSLSelection', ->
 
-			colorWheel.setHSL(partialSampleHue.hsl)
+	describe 'option.allowPartialSelection', ->
+		describe '= true', ->
+			beforeEach ->
+				colorWheel = new cw.ColorWheel(allowPartialSelection: true);
+	
+			it "shouldn't allow S/L to be set until hue has been", ->
+				expect( colorWheel.canSetSL() ).toBe false
+	
+				colorWheel.setHSL(partialSampleHue.hsl)
+	
+				expect( colorWheel.canSetSL() ).toBe true
 
-			expect( colorWheel.canSetSL() ).toBe true
-
-	describe 'option:allowPartialSelection:false', ->
-		beforeEach ->
-			colorWheel = new cw.ColorWheel(allowPartialSelection: false)
-
-		it "should allow all components to be set", ->
-			expect( colorWheel.canSetSL() ).toBe true
-			expect( colorWheel.canSetHue() ).toBe true
-
-		it "should allow a complete component to be set", ->
-			expect( (-> colorWheel.setHSL(normalSample1.hsl)) ).not.toThrow()
-			expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
-
-		it "shouldn't allow a partial component to be set", ->
-			expect( (-> colorWheel.setHSL(partialSampleHue.hsl)) ).toThrow()
+		describe '= false', ->
+			beforeEach ->
+				colorWheel = new cw.ColorWheel(allowPartialSelection: false)
+	
+			it "should allow all components to be set", ->
+				expect( colorWheel.canSetSL() ).toBe true
+				expect( colorWheel.canSetHue() ).toBe true
+	
+			it "should allow a complete component to be set", ->
+				expect( (-> colorWheel.setHSL(normalSample1.hsl)) ).not.toThrow()
+				expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
+	
+			it "shouldn't allow a partial component to be set", ->
+				expect( (-> colorWheel.setHSL(partialSampleHue.hsl)) ).toThrow()
 			
-	describe 'option:callback', ->
+	describe 'option.callback', ->
 		callback = null
 		
 		mouseDownHue0 = null
@@ -66,10 +83,10 @@ describe 'Wheel', ->
 			colorWheel = new cw.ColorWheel(callback:callback)
 			$('#wheel').append colorWheel.$root
 			
-			mouseDownHue0 = $.Event 'mousedown', 
+			mouseDownHue0 = $.Event 'mousedown',
 				pageX: colorWheel.$root.offset().left + colorWheel.$root.width()/2
 				pageY: 0
-			mouseDownHue180 = $.Event 'mousedown', 
+			mouseDownHue180 = $.Event 'mousedown',
 				pageX: colorWheel.$root.offset().left + colorWheel.$root.width()/2
 				pageY: colorWheel.$root.offset().top + colorWheel.$root.height()
 
@@ -92,7 +109,7 @@ describe 'Wheel', ->
 			expect( context ).toBe colorWheel
 		
 		it "should invoke the callback with the selected color as its argument", ->
-			watch = null			
+			watch = null
 			colorWheel.options.callback = (color) -> watch = color
 
 			colorWheel.$hue.trigger(mouseDownHue0)
