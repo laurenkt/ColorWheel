@@ -176,6 +176,24 @@ describe 'Wheel', ->
 			expect( colorWheel.isSLSelected() ).toBe true
 		
 	describe 'option.defaultColor', ->
+		it "should allow the default color to be set with a HSL object", ->
+			colorWheel = new cw.ColorWheel(defaultColor: normalSample1.hsl)
+			expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
+
+		it "should allow the default color to be set with an RGB object", ->
+			colorWheel = new cw.ColorWheel(defaultColor: normalSample1.rgb)
+			expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
+
+		it "should allow the default color to be set with a CSS color string", ->
+			colorWheel = new cw.ColorWheel(defaultColor: normalSample1.string)
+			expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
+			
+		it "should use a local copy of the passed color to prevent its unexpected mutation", ->
+			colorWheel = new cw.ColorWheel(defaultColor: normalSample1.hsl)
+			expect( colorWheel.getHSL() ).not.toBe normalSample1.hsl
+			
+			normalSample1.hsl.h = 20
+			expect( colorWheel.getHSL().h ).not.toBe 20
 		
 	describe 'option.inset', ->
 	
