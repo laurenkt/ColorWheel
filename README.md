@@ -107,7 +107,7 @@ CWLib = cw.noConflict()
 // 'CWLib' can be used instead from this point
 ```
 
-If you have used jQuery's noConflict feature to rescind its control of the 'jQuery' identifier before you include jQuery, you can set CW to use a different jQuery identifier:
+If you have used jQuery's noConflict feature to rescind its control of the 'jQuery' identifier before you include CW, you can set CW to use a different jQuery identifier:
 
 ```javascript
 cw.jQuery(jQ) // where you are using jQ instead of 'jQuery'
