@@ -3,7 +3,6 @@ require 'bundler/setup'
 
 files = FileList[
 	"src/noconflict.coffee",
-	"src/helpers.coffee",
 	"src/color.coffee",
 	"src/wheel.coffee",
 	"src/jquery.coffee"
