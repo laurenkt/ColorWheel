@@ -75,7 +75,7 @@ class cw.ColorWheel
 	isHueSelected: ->
 		@_hsl.h?
 	isSLSelected: ->
-		@_hsl.s? and @_hsl.l?
+		@_hsl.s? or @_hsl.l?
 
 	canSetHue: ->
 		@options.allowHueSelection
@@ -167,8 +167,8 @@ class cw.ColorWheel
 
 		if this.isSLSelected()
 			position =
-				top: Math.round @$sl.height() * (1 - @_hsl.l)
-				left: Math.round @$sl.width() * (1 - @_hsl.s)
+				top: Math.round @$sl.height() * (1 - (@_hsl.l ? 0.5))
+				left: Math.round @$sl.width() * (1 - (@_hsl.s ? 1))
 			
 			@swatches.$sl
 				.css('background-color', @_hsl)

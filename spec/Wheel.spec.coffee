@@ -137,7 +137,44 @@ describe 'Wheel', ->
 			expect( colorWheel.isHueSelected() ).toBe true
 		
 	describe '.isSLSelected', ->
+		it "should return true if a complete color is set", ->
+			colorWheel.setHSL(normalSample1.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			colorWheel.setHSL(normalSample2.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			colorWheel.setHSL(normalSample3.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
 
+		it "should return true if a partial color with lightness is set", ->
+			colorWheel.setHSL(partialSampleLightness.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			colorWheel.setHSL(partialSampleNoSaturation.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			colorWheel.setHSL(partialSampleNoHue.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+
+		it "should return true if a partial color with saturation is set", ->
+			colorWheel.setHSL(partialSampleSaturation.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			colorWheel.setHSL(partialSampleNoLightness.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			colorWheel.setHSL(partialSampleNoHue.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+			
+		it "should return false if a transparent color is set", ->
+			colorWheel.setHSL(transparentSample.hsl)
+			expect( colorWheel.isSLSelected() ).toBe false
+
+		it "should return false if a complete color is set, and then a partial color with no SL is set", ->
+			colorWheel.setHSL(normalSample1.hsl)
+			colorWheel.setHSL(partialSampleHue.hsl)
+			expect( colorWheel.isSLSelected() ).toBe false
+			
+		it "should return true if a partial color with no SL is set, and then a complete color is set", ->
+			colorWheel.setHSL(partialSampleHue.hsl)
+			colorWheel.setHSL(normalSample1.hsl)
+			expect( colorWheel.isSLSelected() ).toBe true
+		
 	describe 'option.defaultColor', ->
 		
 	describe 'option.inset', ->
