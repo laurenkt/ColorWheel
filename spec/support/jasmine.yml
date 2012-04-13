@@ -9,7 +9,7 @@ helpers:
   - helpers/*.*
 
 spec_files:
-  - *.spec.*
+  - '*.spec.*'
 
 src_dir:
 
