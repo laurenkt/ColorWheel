@@ -80,7 +80,10 @@ class cw.ColorWheel
 	canSetHue: ->
 		@options.allowHueSelection
 	canSetSL: ->
-		@options.allowSLSelection and (not @options.allowPartialSelection or this.isHueSelected())
+		@options.allowSLSelection and 
+		(not this.canSetHue() or 
+		 not @options.allowPartialSelection or
+		 this.isHueSelected())
 
 	_onHueMouseDown: =>
 		@_selected = 'ring'

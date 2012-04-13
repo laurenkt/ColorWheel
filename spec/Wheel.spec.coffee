@@ -29,8 +29,30 @@ describe 'Wheel', ->
 			expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
 
 	describe '.canSetHue', ->
+		it "should return true from the beginning in normal usage", ->
+			expect( colorWheel.canSetHue() ).toBe true
+		
+		it "should return false from the beginning when option.allowHueSelection is false", ->
+			colorWheel = new cw.ColorWheel(allowHueSelection: false)
+			expect( colorWheel.canSetHue() ).toBe false
 		
 	describe '.canSetSL', ->
+		it "should return false from the beginning in normal usage", ->
+			expect( colorWheel.canSetSL() ).toBe false
+		
+		it "should return true from the beginning when option.allowPartialSelection is false", ->
+			colorWheel = new cw.ColorWheel(allowPartialSelection: false)
+			expect( colorWheel.canSetSL() ).toBe true
+			
+		it "should return true from the beginning when option.allowHueSelection is false", ->
+			colorWheel = new cw.ColorWheel(allowHueSelection: false)
+			expect( colorWheel.canSetSL() ).toBe true
+			
+		it "should always return false when option.allowSLSelection is false", ->
+			colorWheel = new cw.ColorWheel(allowSLSelection: false)
+			expect( colorWheel.canSetSL() ).toBe false
+			colorWheel.setHSL(partialSampleHue.hsl)
+			expect( colorWheel.canSetSL() ).toBe false
 		
 	describe '.isHueSelected', ->
 		
