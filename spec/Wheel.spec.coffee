@@ -1,19 +1,62 @@
 #= require jasmine-jquery
 
 describe 'Wheel', ->
-	normalSample1 = null
-	partialSampleHue = null
+	# Save initialising over and over again
 	colorWheel = null
-
+	
+	# Samples
+	normalSample1 = null
+	normalSample2 = null
+	normalSample3 = null
+	transparentSample = null
+	partialSampleHue = null
+	partialSampleSaturation = null
+	partialSampleLightness = null
+	partialSampleNoHue = null
+	partialSampleNoSaturation = null
+	partialSampleNoLightness = null
+	
 	beforeEach ->
 		normalSample1 =
 			rgb: new cw.RGB(20/255, 184/255, 148/255)
 			hsl: new cw.HSL(167, 0.8, 0.4)
 			string: '#14b894'
+		normalSample2 =
+			rgb: new cw.RGB(0.4, 0.6, 0.4)
+			hsl: new cw.HSL(120, 0.2, 0.5)
+			string: '#669966'
+		normalSample3 =
+			rgb: new cw.RGB(53/255, 100/255, 172/255)
+			hsl: new cw.HSL(216, 0.53, 0.44)
+			string: '#3564ac'
+		transparentSample =
+			rgb: new cw.RGB()
+			hsl: new cw.HSL()
+			string: 'transparent'
 		partialSampleHue =
-			rgb: new cw.RGB(67/255, 1, 55/255)
+			rgb: new cw.RGB(0, 1, 102/255)
 			hsl: new cw.HSL(144)
-			string: '#43ff37'
+			string: '#00ff66'
+		partialSampleNoHue =
+			rgb: new cw.RGB(0.5, 0.5, 0.5)
+			hsl: new cw.HSL(undefined, 1, 0.5)
+			string: '#808080'
+		partialSampleSaturation =
+			rgb: new cw.RGB(128/255, 128/255, 128/255)
+			hsl: new cw.HSL(undefined, 0.32)
+			string: '#808080'
+		partialSampleNoSaturation =
+			rgb: new cw.RGB(1, 0, 0)
+			hsl: new cw.HSL(0, undefined, 0.5)
+			string: '#ff0000'
+		partialSampleLightness =
+			rgb: new cw.RGB(242/255, 242/255, 242/255)
+			hsl: new cw.HSL(undefined, undefined, 0.95)
+			string: '#f2f2f2'
+		partialSampleNoLightness =
+			rgb: new cw.RGB(0, 1, 0)
+			hsl: new cw.HSL(120, 1)
+			string: '#00ff00'
 
 		colorWheel = new cw.ColorWheel
 
@@ -55,6 +98,43 @@ describe 'Wheel', ->
 			expect( colorWheel.canSetSL() ).toBe false
 		
 	describe '.isHueSelected', ->
+		it "should return true if a complete color is set", ->
+			colorWheel.setHSL(normalSample1.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
+			colorWheel.setHSL(normalSample2.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
+			colorWheel.setHSL(normalSample3.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
+			
+		it "should return true if a partial color with hue is set", ->
+			colorWheel.setHSL(partialSampleHue.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
+			colorWheel.setHSL(partialSampleNoSaturation.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
+			colorWheel.setHSL(partialSampleNoLightness.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
+			
+		it "should return false if a partial color with no hue is set", ->
+			colorWheel.setHSL(partialSampleNoHue.hsl)
+			expect( colorWheel.isHueSelected() ).toBe false
+			colorWheel.setHSL(partialSampleSaturation.hsl)
+			expect( colorWheel.isHueSelected() ).toBe false
+			colorWheel.setHSL(partialSampleLightness.hsl)
+			expect( colorWheel.isHueSelected() ).toBe false
+		
+		it "should return false if a transparent color is set", ->
+			colorWheel.setHSL(transparentSample.hsl)
+			expect( colorWheel.isHueSelected() ).toBe false
+
+		it "should return false if a complete color is set, and then a partial color with no hue is set", ->
+			colorWheel.setHSL(normalSample1.hsl)
+			colorWheel.setHSL(partialSampleNoHue.hsl)
+			expect( colorWheel.isHueSelected() ).toBe false
+			
+		it "should return true if a partial color with no hue is set, and then a complete color is set", ->
+			colorWheel.setHSL(partialSampleNoHue.hsl)
+			colorWheel.setHSL(normalSample1.hsl)
+			expect( colorWheel.isHueSelected() ).toBe true
 		
 	describe '.isSLSelected', ->
 
