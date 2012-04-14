@@ -115,7 +115,6 @@ describe 'Wheel', ->
 			expect( colorWheel.isHueSelected() ).toBe true
 			
 		it "should return false if a partial color with no hue is set", ->
-			colorWheel = new cw.ColorWheel(allowHueSelection: false) # need this to allow SL to be selected without hue
 			colorWheel.setHSL(partialSampleNoHue.hsl)
 			expect( colorWheel.isHueSelected() ).toBe false
 			colorWheel.setHSL(partialSampleSaturation.hsl)
@@ -142,14 +141,12 @@ describe 'Wheel', ->
 			expect( colorWheel.isSLSelected() ).toBe true
 
 		it "should return true if a partial color with lightness is set", ->
-			colorWheel = new cw.ColorWheel(allowHueSelection: false) # necessary to allow SL selection first
 			colorWheel.setHSL(partialSampleLightness.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
 			colorWheel.setHSL(partialSampleNoHue.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
 
 		it "should return true if a partial color with saturation is set", ->
-			colorWheel = new cw.ColorWheel(allowHueSelection: false) # necessary to allow SL selection first
 			colorWheel.setHSL(partialSampleSaturation.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
 			colorWheel.setHSL(partialSampleNoHue.hsl)
@@ -190,6 +187,7 @@ describe 'Wheel', ->
 			expect( colorWheel.getHSL().h ).not.toBe 20
 		
 	describe 'option.inset', ->
+		# Stub
 	
 	describe 'option.allowHueSelection', ->
 		describe '= true', ->

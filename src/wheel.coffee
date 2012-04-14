@@ -83,13 +83,7 @@ class cw.ColorWheel
 		unless @options.allowPartialSelection
 			if hsl.isPartial()
 				throw new Error("Setting partial HSL object when allowPartialSelection:false")
-
-		if hsl.h? and not this.canSetHue()
-			throw new Error("Setting hue when allowHueSelection:false")
-			
-		if (hsl.s? or hsl.l?) and not this.canSetSL(hsl.h?)
-			throw new Error("Setting S/L when not allowed")		
-
+	
 		@_hsl = hsl
 		this.redraw()
 		@$root.trigger('change', this)
@@ -101,17 +95,19 @@ class cw.ColorWheel
 
 	canSetHue: ->
 		@options.allowHueSelection
-	canSetSL: (withHue = false) ->
+	canSetSL: ->
 		@options.allowSLSelection and 
 		(not this.canSetHue() or 
 		 not @options.allowPartialSelection or
-		 this.isHueSelected() or withHue)
+		 this.isHueSelected())
 
 	_onHueMouseDown: =>
-		@_selected = 'ring'
+		if this.canSetHue()
+			@_selected = 'ring'
 		
 	_onSLMouseDown: =>
-		@_selected = 'box'
+		if this.canSetSL()
+			@_selected = 'box'
 
 	_onMouseDown: (e) =>
 		if @_selected isnt 'none'

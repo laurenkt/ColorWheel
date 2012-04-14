@@ -141,3 +141,8 @@ Licence
 -------
 
 Use what you want, how you want, with or without attribution, with no guarantee that it will work.
+
+Credit
+------
+
+[Farbtastic](http://acko.net/blog/farbtastic-jquery-color-picker-plug-in/) was the inspiration for this approach. I wanted a more flexible and non-GPL color picker, so I had to make my own.

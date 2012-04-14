@@ -26,15 +26,13 @@
 			<script type="text/javascript">
 				$('#demo1 div.wheel')
 					.colorWheel({hintEnable:true})
-					.bind('change', function(e, wheel) { 
-						if (wheel.isSLSelected()) {
+					.change(function(e, wheel) { 
+						if (wheel.isSLSelected())
 							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
-								'<strong>S/L</strong> selected</pre>');	
-						}
-						else {
+								'<strong>S/L</strong> selected</pre>')
+						else
 							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
-								'<strong>S/L</strong> not selected</pre>');	
-						}
+								'<strong>S/L</strong> not selected</pre>')
 					});
 			</script>
 			<pre class="small"><strong>Hue</strong> not selected<br><strong>S/L</strong> not selected</pre>
@@ -45,11 +43,13 @@
 			<p>A callback function (optionally taking an HSL object) can be given as an option on creation, or set at any time. <strong>ColorWheel</strong> exports utility functions (<code>HSLToRGB</code>, <code>HSLToString</code>) so that the HSL object can be converted into an RGB object or a CSS-style hex-string representation.</p>
 			<div class="wheel"></div>
 			<script type="text/javascript">
-				$('#demo2 div.wheel').colorWheel({callback: function(newHSL){
-					$('#demo2 pre')
-						.css({borderColor: newHSL})
-						.html(summarize(newHSL));
-				}});
+				$('#demo2 div.wheel')
+					.colorWheel()
+					.change(function(e, wheel) {
+						$('#demo2 pre')
+							.css({borderColor: wheel.getHSL()})
+							.html(summarize(wheel.getHSL()))
+					});
 			</script>
 			<pre class="small">n/a<br>rgb(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)<br>hsl(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)</pre>
 		</div>
@@ -72,7 +72,7 @@
 			<script type="text/javascript">
 				// the inset options indicates how far the hue marker should be
 				// positioned from the edge of the wheel
-				$('#demo3 div.wheel').colorWheel({inset: 5});
+				$('#demo3 div.wheel').colorWheel({inset: 5})
 			</script>
 		</div>
 
@@ -87,21 +87,49 @@
 			</style>
 			<div class="wheel"></div>
 			<script type="text/javascript">
-				$('#demo4 div.wheel').colorWheel({callback: function(newHSL){
-					function within(min, max, n) { return Math.max(min, Math.min(max, n)); }
-					function incrementsOf(i, offset, n) { return Math.round((n+offset) * i)/i - offset; }
+				$('#demo4 div.wheel').colorWheel({callback: function(newHSL) {
+					var within = function(min, max, n) { return Math.max(min, Math.min(max, n)) }
+					var incrementsOf = function(i, offset, n) { return Math.round((n+offset) * i)/i - offset }
 
-					if ('l' in newHSL) {
-						newHSL.l = within(0.15, 0.85, incrementsOf(10, 0.05, newHSL.l));
-					}
+					if (newHSL.l !== undefined)
+						newHSL.l = within(0.15, 0.85, incrementsOf(10, 0.05, newHSL.l))
 
-					if ('s' in newHSL) {
-						newHSL.s = within(0.05, 0.95, incrementsOf(10, 0.05, newHSL.s));
-					}
+					if (newHSL.s !== undefined)
+						newHSL.s = within(0.05, 0.95, incrementsOf(10, 0.05, newHSL.s))
 
 					return newHSL;
 				}});
 			</script>
+		</div>
+		
+		<div class="demo" id="demo5">
+			<h2>5. Only Hue or Only Saturation/Lightness</h2>
+			<p>You can also configure CW only as a hue or S/L picker. Below is an independent hue picker and an independent S/L picker.</p>
+			<p>The example is configured so that when a hue is selected on the top CW, that is set as the base hue on the bottom CW.</p>
+			<style type="text/css">
+				#demo5 .wheel-sl .cw-colorwheel {margin-top:20px; height:100px; width:100px}
+				#demo5 .wheel-sl .cw-colorwheel .cw-sl {top:0; left:0}
+			</style>
+			<div class="wheel-hue"></div>
+			<pre class="small hue">NaN</pre>
+			<div class="wheel-sl"></div>
+			<script type="text/javascript">
+				$('#demo5 .wheel-hue')
+					.colorWheel({allowSLSelection: false})
+					.change(function(e, wheel) { 
+						$('#demo5 pre.hue').html(Math.round(wheel.getHSL().h))
+						
+						var SLWheel = $('#demo5 .wheel-sl').data('colorWheel.cw')
+						var SLWheelHSL = SLWheel.getHSL()
+						SLWheel.setHSL(new cw.HSL(wheel.getHSL().h, SLWheelHSL.s, SLWheelHSL.l))
+					})
+				$('#demo5 .wheel-sl')
+					.colorWheel({allowHueSelection: false})
+					.change(function(e, wheel) {
+						$('#demo5 pre.sl').html(round(wheel.getHSL().s, 2) + ', ' + round(wheel.getHSL().l, 2))
+					})
+			</script>
+			<pre class="small sl">NaN, NaN</pre>
 		</div>
 	</body>
 </html>
