@@ -115,6 +115,7 @@ describe 'Wheel', ->
 			expect( colorWheel.isHueSelected() ).toBe true
 			
 		it "should return false if a partial color with no hue is set", ->
+			colorWheel = new cw.ColorWheel(allowHueSelection: false) # need this to allow SL to be selected without hue
 			colorWheel.setHSL(partialSampleNoHue.hsl)
 			expect( colorWheel.isHueSelected() ).toBe false
 			colorWheel.setHSL(partialSampleSaturation.hsl)
@@ -130,12 +131,7 @@ describe 'Wheel', ->
 			colorWheel.setHSL(normalSample1.hsl)
 			colorWheel.setHSL(partialSampleNoHue.hsl)
 			expect( colorWheel.isHueSelected() ).toBe false
-			
-		it "should return true if a partial color with no hue is set, and then a complete color is set", ->
-			colorWheel.setHSL(partialSampleNoHue.hsl)
-			colorWheel.setHSL(normalSample1.hsl)
-			expect( colorWheel.isHueSelected() ).toBe true
-		
+					
 	describe '.isSLSelected', ->
 		it "should return true if a complete color is set", ->
 			colorWheel.setHSL(normalSample1.hsl)
@@ -146,17 +142,15 @@ describe 'Wheel', ->
 			expect( colorWheel.isSLSelected() ).toBe true
 
 		it "should return true if a partial color with lightness is set", ->
+			colorWheel = new cw.ColorWheel(allowHueSelection: false) # necessary to allow SL selection first
 			colorWheel.setHSL(partialSampleLightness.hsl)
-			expect( colorWheel.isSLSelected() ).toBe true
-			colorWheel.setHSL(partialSampleNoSaturation.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
 			colorWheel.setHSL(partialSampleNoHue.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
 
 		it "should return true if a partial color with saturation is set", ->
+			colorWheel = new cw.ColorWheel(allowHueSelection: false) # necessary to allow SL selection first
 			colorWheel.setHSL(partialSampleSaturation.hsl)
-			expect( colorWheel.isSLSelected() ).toBe true
-			colorWheel.setHSL(partialSampleNoLightness.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
 			colorWheel.setHSL(partialSampleNoHue.hsl)
 			expect( colorWheel.isSLSelected() ).toBe true
@@ -198,8 +192,48 @@ describe 'Wheel', ->
 	describe 'option.inset', ->
 	
 	describe 'option.allowHueSelection', ->
+		describe '= true', ->
+			beforeEach ->
+				colorWheel = new cw.ColorWheel(allowHueSelection: true)
+			
+			it "should allow the hue to be selected from the beginning", ->
+				colorWheel.setHSL(partialSampleHue.hsl)
+				expect( colorWheel.getHSL() ).toEqualHSL partialSampleHue.hsl
+			
+			it "should imply that the SL cannot be selected from the beginning (with default options)", ->
+				expect( -> colorWheel.setHSL(partialSampleNoHue.hsl) ).toThrow
+				expect( colorWheel.getHSL() ).not.toEqualHSL partialSampleNoHue.hsl
+		
+		describe '= false', ->
+			beforeEach ->
+				colorWheel = new cw.ColorWheel(allowHueSelection: false)
+			
+			it "should not allow the hue to be selected from the beginning", ->
+				expect( -> colorWheel.setHSL(partialSampleHue.hsl) ).toThrow
+				expect( colorWheel.getHSL() ).not.toEqualHSL partialSampleHue.hsl
+				
+			it "should imply that the SL can be selected from the beginning (with default options)", ->
+				colorWheel.setHSL(partialSampleNoHue.hsl)
+				expect( colorWheel.getHSL() ).toEqualHSL partialSampleNoHue.hsl
 	
 	describe 'option.allowSLSelection', ->
+		describe '= true', ->
+			beforeEach ->
+				colorWheel = new cw.ColorWheel(allowSLSelection: true)
+				
+			it "should allow SL to be selected with a hue (with default options)", ->
+				colorWheel.setHSL(normalSample1.hsl)
+				expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
+				
+		describe '= false', ->
+			beforeEach ->
+				colorWheel = new cw.ColorWheel(allowSLSelection: false)
+					
+				it "should not allow SL to be selected, with or without a hue", ->
+					colorWheel.setHSL(partialSampleNoHue.hsl)
+					expect( colorWheel.getHSL() ).not.toEqualHSL partialSampleNoHue.hsl
+					expect( -> colorWheel.setHSL(normalSample1.hsl) ).toThrow
+					expect( colorWheel.getHSL() ).not.toEqualHSL normalSample1.hsl
 
 	describe 'option.allowPartialSelection', ->
 		describe '= true', ->
@@ -222,11 +256,11 @@ describe 'Wheel', ->
 				expect( colorWheel.canSetHue() ).toBe true
 	
 			it "should allow a complete component to be set", ->
-				expect( (-> colorWheel.setHSL(normalSample1.hsl)) ).not.toThrow()
+				expect( -> colorWheel.setHSL(normalSample1.hsl) ).not.toThrow()
 				expect( colorWheel.getHSL() ).toEqualHSL normalSample1.hsl
 	
 			it "shouldn't allow a partial component to be set", ->
-				expect( (-> colorWheel.setHSL(partialSampleHue.hsl)) ).toThrow()
+				expect( -> colorWheel.setHSL(partialSampleHue.hsl) ).toThrow()
 			
 	describe 'option.callback', ->
 		callback = null
