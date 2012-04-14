@@ -20,7 +20,7 @@ class cw.RGB extends cw.Color
 		chroma = max - min
 		
 		if chroma is 0
-			new cw.HSL(undefined, 0, max) # achromatic
+			new cw.HSL(undefined, undefined, max) # achromatic
 		else
 			h = 60 * switch max # determine where on which side h lies, and *60 to convert to circular
 				when @r then (@g - @b)/chroma % 6
@@ -70,7 +70,7 @@ class cw.HSL extends cw.Color
 
 	toHSL: ->
 		new cw.HSL(@h, @s, @l)
-
+		
 	toRGB: ->
 		if this.isTransparent() then return new cw.RGB()
 

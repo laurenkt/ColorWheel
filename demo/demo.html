@@ -80,7 +80,7 @@
 			<h2>4. Validate Color Selection</h2>
 			<p>The callback function can reject the new selection by returning <code>false</code>, or alter the selection by returning an altered HSL object <code>{h:0..360, s:0..1, l:0..1}</code>.</p>
 			<p>Returning <code>true</code>, not returning any value, or returning the same value will allow the selection.</p>
-			<pre><code>wheel.setCallback(<span class="function">function</span>(newHSL) <span class="function">{</span><br>    <span class="comment">// allow selection</span><br>    <span class="keyword">return</span> newHSL;<br>    <span class="keyword">return</span> <span class="literal">true</span>;<br>    <span class="keyword">return</span>;<br><br>    <span class="comment">// reject selection</span><br>    <span class="keyword">return</span> <span class="literal">false</span>;<br><br>    <span class="comment">// alter, e.g. always select fully saturated</span><br>    <span class="keyword">return</span> <span class="object">{</span><span class="property">h</span>:newHSL.h, <span class="property">s</span>:1, <span class="property">l</span>:newHSL.l<span class="object">}</span>;<br><span class="function">}</span>);</code></pre>
+			<pre><code>wheel.options.callback = <span class="function">function</span>(newHSL) <span class="function">{</span><br>    <span class="comment">// allow selection</span><br>    <span class="keyword">return</span> newHSL<br>    <span class="keyword">return</span> <span class="literal">true</span><br>    <span class="keyword">return</span><br><br>    <span class="comment">// reject selection</span><br>    <span class="keyword">return</span> <span class="literal">false</span><br><br>    <span class="comment">// alter, e.g. always select fully saturated</span><br>    <span class="keyword">return</span> <span class="keyword">new</span> cw.HSL(newHSL.h, <span class="literal">1</span>, newHSL.l)<br><span class="function">}</span></code></pre>
 			<p>The example below forces the lightness into the range 0.15..0.85, and only allows lightness/saturation to be selected in multiples of 10 at 0.05 offsets. A replacement sprite is used so that these restrictions would be clear to the user.
 			<style type="text/css">
 				#demo4 .cw-colorwheel .cw-sl {background:url(demo-3-sl-sprite.png) no-repeat 0 0}
@@ -130,6 +130,37 @@
 					})
 			</script>
 			<pre class="small sl">NaN, NaN</pre>
+		</div>
+		
+		<div class="demo" id="demo6">
+			<h2>6. Link to a Text Input</h2>
+			<p>This example shows how you would implement <a href="http://acko.net/blog/farbtastic-jquery-color-picker-plug-in/">Farbtastic</a>'s 'element link' behaviour with CW.</p>
+			<p>Selecting a color updates the textbox. Changing the textbox updates the color.</p>
+			<div class="wheel"></div>
+			<p class="input"><input type="text"></p>
+			<script type="text/javascript">
+				var demo6wheel = $('#demo6 .wheel')
+				var demo6input = $('#demo6 input')
+				demo6wheel
+					.colorWheel({SLHiddenWhenNoHue: false, callback: function(newHSL) {
+						demo6input
+							.val(newHSL)
+							.css('background-color', newHSL)
+					}})
+				demo6input.keyup(function() {
+					try {
+						var color = cw.HSL.fromString(demo6input.val())
+						console.log(color)
+						var colorWheel = demo6wheel.data('colorWheel.cw')
+						
+						colorWheel.setHSL(color)
+						demo6input.css('background-color', color)
+					}
+					catch (e) {
+						// color wasn't valid
+					}
+				})
+			</script>
 		</div>
 	</body>
 </html>

@@ -24,6 +24,7 @@ class cw.ColorWheel
 			allowPartialSelection: true
 			allowHueSelection: true
 			allowSLSelection: true
+			SLHiddenWhenNoHue: true
 			animationTime: 200
 			hintEnable: false
 			hintQueue: 'hint.cw'
@@ -99,6 +100,7 @@ class cw.ColorWheel
 		@options.allowSLSelection and 
 		(not this.canSetHue() or 
 		 not @options.allowPartialSelection or
+		 not @options.SLHiddenWhenNoHue or
 		 this.isHueSelected())
 
 	_onHueMouseDown: =>
@@ -183,7 +185,7 @@ class cw.ColorWheel
 		else
 			@$sl.hide()
 
-		if this.isSLSelected()
+		if this.isSLSelected() or @hasBeenSet
 			position =
 				top: Math.round @$sl.height() * (1 - (@_hsl.l ? 0.5))
 				left: Math.round @$sl.width() * (1 - (@_hsl.s ? 1))

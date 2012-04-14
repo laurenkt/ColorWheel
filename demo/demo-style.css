@@ -13,7 +13,7 @@ div.demo {
     background: #222;
     border: 1px solid #2b2b2b;
     margin: 20px;
-    box-shadow: 0px 0px 20px #292929;
+    box-shadow: 0 0 10px #292929;
 }
 
 div.demo div {
@@ -35,7 +35,7 @@ pre {
 }
 
 pre .literal {
-    color: #0fc4ff;
+    color: #ea9eda;
 }
 
 pre .keyword {
@@ -48,14 +48,6 @@ pre .function {
 
 pre .comment {
     color: #555;
-}
-
-pre .object {
-    color: #ff3de7;
-}
-
-pre .property {
-    color: #ea9eda;
 }
 
 pre.small {
@@ -114,4 +106,21 @@ p {
 
 a:hover {
     color: #8fe4ff;
+}
+
+p.input {
+    text-align: center;
+    margin: 0;
+}
+
+input {
+    margin: 20px auto 0;
+    padding: 5px;
+    width: 100px;
+    font: bold 12pt Helvetica, Arial, sans-serif;
+    text-shadow: 0 0 3px white;
+    text-align: center;
+    border: 3px solid black;
+    border-radius: 10px;
+    background: white url(input.png) repeat-x;
 }
