@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ColorWheel Demo</title>
+
+		<!-- jQuery -->
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="jquery.shadow.js"></script>
+
+		<!-- ColorWheel -->
+		<link rel="stylesheet" href="../cw-style.css" type="text/css">
+		<script type="text/javascript" src="../cw-colorwheel.js"></script>
+
+		<!-- Demo -->
+		<link rel="stylesheet" href="demo-style.css" type="text/css">
+		<script type="text/javascript" src="demo-utilities.js"></script>
+	</head>
+	<body>
+		<h1>ColorWheel</h1>
+
+		<div class="demo" id="demo1">
+			<h2>1. Partial Selection</h2>
+			<p>In observing users that were presented with some of the existing color wheel solutions, I found that some users, particularly ones who were unlikely to have encountered a HSL wheel before, were not realising that to select a color they needed to select <em>both</e> a hue <em>and</em> a saturation/lightness vector. Many would only select a hue without understanding that the saturation/lightness box was there to be clicked. This, combined with the poor default lightness of 0 in some solutions, meant that users who had painstakingly selected many colours on the outer hue wheel would often have their input interpreted as 100% black.</p>
+			<p><strong>ColorWheel</strong> aims to try and solve this problem with "partial color selection". In its default behavior, the S/L grid will not show to the user until they have selected a hue on the outer wheel. This is intended so that the appearance of the S/L grid will make the users more aware that it is interactable.</p>
+			<p>Additionally CW supports "hinting". This means that when a hue is selected CW will hint the S/L box to the user by animating a small glow effect on the box. This feature is disabled by default as it requires support for animating box-shadow in jQuery, support which is not present by default and requires the use of <a href="http://www.bitstorm.org/jquery/shadow-animation/">a third party plug-in</a>.</p>
+			<p>The first example below has hinting enabled.</p>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				$('#demo1 div.wheel')
+					.colorWheel({hintEnable:true})
+					.change(function(e) { 
+						if (this.colorWheel.isSLSelected())
+							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
+								'<strong>S/L</strong> selected</pre>')
+						else
+							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
+								'<strong>S/L</strong> not selected</pre>')
+					})
+			</script>
+			<pre class="small"><strong>Hue</strong> not selected<br><strong>S/L</strong> not selected</pre>
+		</div>
+
+		<div class="demo" id="demo2">
+			<h2>2. Callback</h2>
+			<p>A callback function (optionally taking an HSL object) can be given as an option on creation, or set at any time. <strong>ColorWheel</strong> exports utility functions (<code>HSLToRGB</code>, <code>HSLToString</code>) so that the HSL object can be converted into an RGB object or a CSS-style hex-string representation.</p>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				$('#demo2 div.wheel')
+					.colorWheel()
+					.change(function(e, color) {
+						$('#demo2 pre')
+							.css({borderColor: color})
+							.html(summarize(color))
+					})
+			</script>
+			<pre class="small">n/a<br>rgb(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)<br>hsl(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)</pre>
+		</div>
+
+		<div class="demo" id="demo3">
+			<h2>3. Custom-sized Components</h2>
+			<p>The size of the components is defined with CSS. Using replacement sprites is recommended; information on how to do so is in <a href="https://github.com/Comaleaf/ColorWheel/blob/master/graphics/README.md">graphics/README.md on the GitHub repository</a>.</p>
+			<style type="text/css">
+				#demo3 .cw-colorwheel {width:360px; height:360px}
+				#demo3 .cw-colorwheel .cw-h {width:360px; height:360px;
+					background:url(demo-2-sprites.png) no-repeat 0 0}
+				#demo3 .cw-colorwheel .cw-sl {position:absolute; top:140px; left:140px; width:80px;
+					height:80px; background:url(demo-2-sprites.png) no-repeat 0 -360px}
+				#demo3 .cw-colorwheel .cw-marker {position:absolute; width:22px; height:22px;
+					margin:-10px 0 0 -10px; background:url(demo-2-sprites.png) no-repeat -80px -360px}
+				#demo3 .cw-colorwheel .cw-swatch {position:absolute; width:14px;
+					height:14px; margin:-6px 0 0 -6px}
+			</style>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				// the inset options indicates how far the hue marker should be
+				// positioned from the edge of the wheel
+				$('#demo3 div.wheel').colorWheel({inset: 5})
+			</script>
+		</div>
+
+		<div class="demo" id="demo4">
+			<h2>4. Validate Color Selection</h2>
+			<p>The callback function can reject the new selection by returning <code>false</code>, or alter the selection by returning an altered HSL object <code>{h:0..360, s:0..1, l:0..1}</code>.</p>
+			<p>Returning <code>true</code>, not returning any value, or returning the same value will allow the selection.</p>
+			<pre><code>wheel.options.callback = <span class="function">function</span>(newHSL) <span class="function">{</span><br>    <span class="comment">// allow selection</span><br>    <span class="keyword">return</span> newHSL<br>    <span class="keyword">return</span> <span class="literal">true</span><br>    <span class="keyword">return</span><br><br>    <span class="comment">// reject selection</span><br>    <span class="keyword">return</span> <span class="literal">false</span><br><br>    <span class="comment">// alter, e.g. always select fully saturated</span><br>    <span class="keyword">return</span> <span class="keyword">new</span> cw.HSL(newHSL.h, <span class="literal">1</span>, newHSL.l)<br><span class="function">}</span></code></pre>
+			<p>The example below forces the lightness into the range 0.15..0.85, and only allows lightness/saturation to be selected in multiples of 10 at 0.05 offsets. A replacement sprite is used so that these restrictions would be clear to the user.
+			<style type="text/css">
+				#demo4 .cw-colorwheel .cw-sl {background:url(demo-3-sl-sprite.png) no-repeat 0 0}
+			</style>
+			<div class="wheel"></div>
+			<script type="text/javascript">
+				$('#demo4 div.wheel').colorWheel({callback: function(newHSL) {
+					var within = function(min, max, n) { return Math.max(min, Math.min(max, n)) }
+					var incrementsOf = function(i, offset, n) { return Math.round((n+offset) * i)/i - offset }
+
+					if (newHSL.l !== undefined)
+						newHSL.l = within(0.15, 0.85, incrementsOf(10, 0.05, newHSL.l))
+
+					if (newHSL.s !== undefined)
+						newHSL.s = within(0.05, 0.95, incrementsOf(10, 0.05, newHSL.s))
+
+					return newHSL;
+				}});
+			</script>
+		</div>
+		
+		<div class="demo" id="demo5">
+			<h2>5. Only Hue or Only Saturation/Lightness</h2>
+			<p>You can also configure CW only as a hue or S/L picker. Below is an independent hue picker and an independent S/L picker.</p>
+			<p>The example is configured so that when a hue is selected on the top CW, that is set as the base hue on the bottom CW.</p>
+			<style type="text/css">
+				#demo5 .wheel-sl .cw-colorwheel {margin-top:20px; height:100px; width:100px}
+				#demo5 .wheel-sl .cw-colorwheel .cw-sl {top:0; left:0}
+			</style>
+			<div class="wheel-hue"></div>
+			<pre class="small hue">NaN</pre>
+			<div class="wheel-sl"></div>
+			<script type="text/javascript">
+				var demo5Hue = $('#demo5 .wheel-hue').colorWheel({allowSLSelection: false})
+				var demo5SL = $('#demo5 .wheel-sl').colorWheel({allowHueSelection: false})
+
+				demo5Hue.change(function(e, color) { 
+					$('#demo5 pre.hue').html(Math.round(color.h))
+					
+					var SLColorWheel = demo5SL.get(0).colorWheel;
+					SLColorWheel.setHSL(new cw.HSL(color.h, SLColorWheel.getHSL().s, SLColorWheel.getHSL().l))
+				})
+				demo5SL.change(function(e, color) {
+					$('#demo5 pre.sl').html(round(color.s, 2) + ', ' + round(color.l, 2))
+				})
+			</script>
+			<pre class="small sl">NaN, NaN</pre>
+		</div>
+		
+		<div class="demo" id="demo6">
+			<h2>6. Link to a Text Input</h2>
+			<p>This example shows how you would implement <a href="http://acko.net/blog/farbtastic-jquery-color-picker-plug-in/">Farbtastic</a>'s 'element link' behaviour with CW.</p>
+			<p>Selecting a color updates the textbox. Changing the textbox updates the color.</p>
+			<div class="wheel"></div>
+			<p class="input"><input type="text"></p>
+			<script type="text/javascript">
+				var demo6wheel = $('#demo6 .wheel')
+				var demo6input = $('#demo6 input')
+				demo6wheel
+					.colorWheel({SLHiddenWhenNoHue: false, callback: function(newHSL) {
+						demo6input
+							.val(newHSL)
+							.css('background-color', newHSL)
+					}})
+				demo6input.keyup(function() {
+					try {
+						var color = cw.HSL.fromString(demo6input.val())
+						
+						demo6wheel.get(0).colorWheel.setHSL(color)
+						demo6input.css('background-color', color)
+					}
+					catch (e) {
+						// color wasn't valid
+					}
+				})
+			</script>
+		</div>
+	</body>
+</html>
