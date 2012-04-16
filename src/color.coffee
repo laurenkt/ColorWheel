@@ -1,3 +1,12 @@
+# A baseclass is used so that objects can be trivially tested to see if they are Color objects:
+#
+# A naïve test:
+#
+# 	obj instanceof cw.Color
+# 
+# A cross-window compatible test:
+#
+# 	obj.isColor
 class cw.Color
 	constructor: ->
 		@isColor = yes
@@ -20,14 +29,17 @@ class cw.RGB extends cw.Color
 		chroma = max - min
 		
 		if chroma is 0
-			new cw.HSL(undefined, undefined, max) # achromatic
+			# achromatic
+			new cw.HSL(undefined, undefined, max)
 		else
-			h = 60 * switch max # determine where on which side h lies, and *60 to convert to circular
+			# determine where on which side h lies, and *60 to convert to circular
+			h = 60 * switch max
 				when @r then (@g - @b)/chroma % 6
 				when @g then (@b - @r)/chroma + 2
 				when @b then (@r - @g)/chroma + 4
 
-			l = (max + min)/2 # average of largest and smallest components
+			# average of largest and smallest components
+			l = (max + min)/2
 			s = chroma/(1 - Math.abs(2*l - 1))
 
 			new cw.HSL(h, s, l)
@@ -41,7 +53,8 @@ class cw.RGB extends cw.Color
 	toString: ->
 		if this.isTransparent()
 			'transparent'
-		else # convert to #aabbcc hex representation
+		else
+			# convert to #aabbcc hex representation
 			{r, g, b} = this.to24Bit()
 			toByte = (value) -> ('0' + value.toString(16)).slice(-2)
 			"##{toByte r}#{toByte g}#{toByte b}"
@@ -74,19 +87,23 @@ class cw.HSL extends cw.Color
 	toRGB: ->
 		if this.isTransparent() then return new cw.RGB()
 
-		h = @h / 60; # convert from circlular to hexagonal representation, h represents side
+		# convert from circlular to hexagonal representation, h represents side
+		h = @h / 60
 
 		# sensible defaults for missing sl values
 		s = @s ? 1
 		l = @l ? 0.5
 		
 		chroma = (1 - Math.abs(2*l - 1)) * s
-		min = l - chroma/2 # find smallest component
-		mid = chroma * (1 - Math.abs(h%2 - 1)) # find middle component
+		# find smallest component
+		min = l - chroma/2
+		# find middle component
+		mid = chroma * (1 - Math.abs(h%2 - 1))
 		
 		# should be one of 6 sides of the hexagon, or NaN
 		if isNaN(h)
-			new cw.RGB(l, l, l) # no hue - achromatic
+			# no hue - achromatic
+			new cw.RGB(l, l, l)
 		else
 			[r, g, b] = switch Math.floor(h)
 				when 0 then [chroma, mid, 0]
@@ -96,7 +113,8 @@ class cw.HSL extends cw.Color
 				when 4 then [mid, 0, chroma]
 				when 5 then [chroma, 0, mid]
 		
-			new cw.RGB(r+min, g+min, b+min) # RGB components equally lightened by smallest component
+			# RGB components equally lightened by smallest component
+			new cw.RGB(r+min, g+min, b+min)
 
 	toString: ->
 		this.toRGB().toString()

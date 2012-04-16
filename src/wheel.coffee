@@ -48,7 +48,8 @@ class cw.ColorWheel
 			$hue:    $('<div class="cw-marker" />').appendTo @$hue
 			$sl:     $('<div class="cw-marker" />').appendTo @$sl
 
-		this.redraw() # draw wheels with variables set as initialised
+		# draw wheels with variables set as initialised
+		this.redraw()
 
 		# wait on user input
 		@$root.bind('mousedown.cw', this._onMouseDown)
@@ -58,7 +59,7 @@ class cw.ColorWheel
 	hintSL: (onOrOff = on) =>
 		if not @options.hintEnable then return
 		
-		animOptions = {queue:@options.hintQueue, duration:@options.hintTime}
+		animOptions = queue: @options.hintQueue, duration: @options.hintTime
 
 		cssBoxShadow = (blur, alpha) =>
 			{r, g, b} = (new cw.HSL(@_hsl.h, 1, .5)).toRGB().to24Bit()
@@ -79,7 +80,7 @@ class cw.ColorWheel
 				.animate(cssBoxShadow(5, 0), animOptions)
 				.dequeue(@options.hintQueue)
 
-	getHSL: -> @_hsl
+	getHSL: -> @_hsl.toHSL()
 	setHSL: (hsl) ->
 		unless @options.allowPartialSelection
 			if hsl.isPartial()
@@ -87,7 +88,7 @@ class cw.ColorWheel
 	
 		@_hsl = hsl
 		this.redraw()
-		@$root.trigger('change', this)
+		@$root.trigger('change', [this.getHSL(), this])
 
 	isHueSelected: ->
 		@_hsl.h?
@@ -97,8 +98,8 @@ class cw.ColorWheel
 	canSetHue: ->
 		@options.allowHueSelection
 	canSetSL: ->
-		@options.allowSLSelection and 
-		(not this.canSetHue() or 
+		@options.allowSLSelection and
+		(not this.canSetHue() or
 		 not @options.allowPartialSelection or
 		 not @options.SLHiddenWhenNoHue or
 		 this.isHueSelected())
@@ -148,7 +149,8 @@ class cw.ColorWheel
 				l = asPercentage .5 - y/@$sl.height()
 
 		if @options.callback?
-			response = do $.proxy(@options.callback, this, new cw.HSL(h, s, l)) # invoke callback with 'this' context
+			# invoke callback with 'this' context
+			response = do $.proxy(@options.callback, this, new cw.HSL(h, s, l))
 
 		if response isnt false
 			if response?.isColor

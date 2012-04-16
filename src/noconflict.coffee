@@ -1,18 +1,15 @@
-# Variables referenced through CW, must be declared at front
 cw = {}
-$ = {}
 
-# Store a reference to old window.cw, and then replace
+# Store a reference to whatever was previously at `window.cw` before assigning `window.cw` as our own object, so that it can be restored by the `cw.noConflict()` method if necessary.
 __noConflict = @cw
 @cw = cw
 
-###
-Returns control of the 'cw' variable back to its original owner, and returns a
-reference to ColorWheel so a new name can be given.
-
-Example:
-	var CWLib = cw.noConflict()
-###
+# Returns control of the `cw` global back to its original owner,
+# and returns a reference to CW so the callee can assign it to a new name.
+#
+# Example usage:
+#
+# 	var CWLib = cw.noConflict()
 cw.noConflict = =>
 	@cw = __noConflict
-	cw # return cw so that cw can be set to a different namespace
+	cw

@@ -20,20 +20,22 @@
 
 		<div class="demo" id="demo1">
 			<h2>1. Partial Selection</h2>
-			<p>In observing users that were presented with some of the existing color wheels found on the internet, I found that some users, particularly ones who were unlikely to have encountered a HSL wheel before, were not realising that to select a whole color, they needed to select both a hue and a saturation/lightness vector. This, combined with the poor default lightness of 0 in many solutions, meant that users who had painstakingly selected many colours on the outer hue wheel would often have their input interpreted as 100% black.</p>
-			<p><strong>ColorWheel</strong> aims to try and solve this problem with partial color selection. In its default behavior, the S/L grid will not show to the user until they have selected a hue on the outer wheel. This is intended so that the appearance of the S/L grid will make the users more aware that it is interactable.
+			<p>In observing users that were presented with some of the existing color wheel solutions, I found that some users, particularly ones who were unlikely to have encountered a HSL wheel before, were not realising that to select a color they needed to select <em>both</e> a hue <em>and</em> a saturation/lightness vector. Many would only select a hue without understanding that the saturation/lightness box was there to be clicked. This, combined with the poor default lightness of 0 in some solutions, meant that users who had painstakingly selected many colours on the outer hue wheel would often have their input interpreted as 100% black.</p>
+			<p><strong>ColorWheel</strong> aims to try and solve this problem with "partial color selection". In its default behavior, the S/L grid will not show to the user until they have selected a hue on the outer wheel. This is intended so that the appearance of the S/L grid will make the users more aware that it is interactable.</p>
+			<p>Additionally CW supports "hinting". This means that when a hue is selected CW will hint the S/L box to the user by animating a small glow effect on the box. This feature is disabled by default as it requires support for animating box-shadow in jQuery, support which is not present by default and requires the use of <a href="http://www.bitstorm.org/jquery/shadow-animation/">a third party plug-in</a>.</p>
+			<p>The first example below has hinting enabled.</p>
 			<div class="wheel"></div>
 			<script type="text/javascript">
 				$('#demo1 div.wheel')
 					.colorWheel({hintEnable:true})
-					.change(function(e, wheel) { 
-						if (wheel.isSLSelected())
+					.change(function(e) { 
+						if (this.colorWheel.isSLSelected())
 							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
 								'<strong>S/L</strong> selected</pre>')
 						else
 							$('#demo1 pre').html('<strong>Hue</strong> selected<br>' +
 								'<strong>S/L</strong> not selected</pre>')
-					});
+					})
 			</script>
 			<pre class="small"><strong>Hue</strong> not selected<br><strong>S/L</strong> not selected</pre>
 		</div>
@@ -45,18 +47,18 @@
 			<script type="text/javascript">
 				$('#demo2 div.wheel')
 					.colorWheel()
-					.change(function(e, wheel) {
+					.change(function(e, color) {
 						$('#demo2 pre')
-							.css({borderColor: wheel.getHSL()})
-							.html(summarize(wheel.getHSL()))
-					});
+							.css({borderColor: color})
+							.html(summarize(color))
+					})
 			</script>
 			<pre class="small">n/a<br>rgb(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)<br>hsl(<strong>NaN</strong>,<strong>NaN</strong>,<strong>NaN</strong>)</pre>
 		</div>
 
 		<div class="demo" id="demo3">
 			<h2>3. Custom-sized Components</h2>
-			<p>The size of the components is defined with CSS. Using replacement sprites is recommended; information on how to do so is on <a href="#">the project's GitHub wiki</a>.</p>
+			<p>The size of the components is defined with CSS. Using replacement sprites is recommended; information on how to do so is in <a href="https://github.com/Comaleaf/ColorWheel/blob/master/graphics/README.md">graphics/README.md on the GitHub repository</a>.</p>
 			<style type="text/css">
 				#demo3 .cw-colorwheel {width:360px; height:360px}
 				#demo3 .cw-colorwheel .cw-h {width:360px; height:360px;
@@ -114,20 +116,18 @@
 			<pre class="small hue">NaN</pre>
 			<div class="wheel-sl"></div>
 			<script type="text/javascript">
-				$('#demo5 .wheel-hue')
-					.colorWheel({allowSLSelection: false})
-					.change(function(e, wheel) { 
-						$('#demo5 pre.hue').html(Math.round(wheel.getHSL().h))
-						
-						var SLWheel = $('#demo5 .wheel-sl').data('colorWheel.cw')
-						var SLWheelHSL = SLWheel.getHSL()
-						SLWheel.setHSL(new cw.HSL(wheel.getHSL().h, SLWheelHSL.s, SLWheelHSL.l))
-					})
-				$('#demo5 .wheel-sl')
-					.colorWheel({allowHueSelection: false})
-					.change(function(e, wheel) {
-						$('#demo5 pre.sl').html(round(wheel.getHSL().s, 2) + ', ' + round(wheel.getHSL().l, 2))
-					})
+				var demo5Hue = $('#demo5 .wheel-hue').colorWheel({allowSLSelection: false})
+				var demo5SL = $('#demo5 .wheel-sl').colorWheel({allowHueSelection: false})
+
+				demo5Hue.change(function(e, color) { 
+					$('#demo5 pre.hue').html(Math.round(color.h))
+					
+					var SLColorWheel = demo5SL.get(0).colorWheel;
+					SLColorWheel.setHSL(new cw.HSL(color.h, SLColorWheel.getHSL().s, SLColorWheel.getHSL().l))
+				})
+				demo5SL.change(function(e, color) {
+					$('#demo5 pre.sl').html(round(color.s, 2) + ', ' + round(color.l, 2))
+				})
 			</script>
 			<pre class="small sl">NaN, NaN</pre>
 		</div>
@@ -150,10 +150,8 @@
 				demo6input.keyup(function() {
 					try {
 						var color = cw.HSL.fromString(demo6input.val())
-						console.log(color)
-						var colorWheel = demo6wheel.data('colorWheel.cw')
 						
-						colorWheel.setHSL(color)
+						demo6wheel.get(0).colorWheel.setHSL(color)
 						demo6input.css('background-color', color)
 					}
 					catch (e) {

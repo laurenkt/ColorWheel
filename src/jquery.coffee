@@ -1,33 +1,25 @@
-###
-Allows a reference to jQuery to be given if the jQuery name has been completely
-altered (e.g. for people running multiple instances of jQuery).
+# This file manages the projects reference to jQuery. It can be used to update
+# the reference if jQuery isn't available on its usual namespace (`window.jQuery`).
 
-Example:
-	jQuery1p7 = jQuery.noConflict(true)
-	jQuery1p7
-		.when(jQuery1p7.getScript('cw-colorwheel.js'))
-		.then(function() {
-			// ColorWheel needs window.jQuery to function, and thus will not work here
-			cw.jQuery(jQuery1p7)
-			// ColorWheel now has a working reference to jQuery, and thus will work.
-			jQuery1p7('div').colorWheel()
-		})
-###
+# Reference to jQuery that is used throughout the project.
+$ = {}
+
+# Rebinds the project's reference to jQuery to the jQuery passed to this function,
+# and installs the :color-wheel selector and $().colorWheel plug-in for the new
+# reference.
 cw.jQuery = (jQuery) ->
 	$ = jQuery
 
-	# allows using $(':color-wheel') to find all elements that have had a ColorWheel
-	# appended with $(el).colorWheel();
 	$.expr[':']['color-wheel'] = (el) ->
-		$(el).data('colorWheel.cw')?
+		el.colorWheel?
 
-	# automatically appends a colorwheel to the selected node, and stores a
-	# reference to it in the node's data attribute
+	# Creates a new ColorWheel, passing the given options, and automatically appends it to the
+	# selected node by referencing it in the node's `data` attribute.
 	$.fn.colorWheel = (options) ->
-		this.filter(':not(:color-wheel)').each ->
-			colorWheel = new cw.ColorWheel(options)
-			$(this)
-				.data('colorWheel.cw', colorWheel)
-				.append(colorWheel.$root)
+		for node in this when not node.colorWheel?
+			node.colorWheel = new cw.ColorWheel(options)
+			$(node).append(node.colorWheel.$root)
+		this
 
+# By default, set the instance of jQuery that CW will use to `window.jQuery`.
 cw.jQuery @jQuery
