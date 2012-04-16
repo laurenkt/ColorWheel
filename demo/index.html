@@ -20,9 +20,9 @@
 
 		<div class="demo" id="demo1">
 			<h2>1. Partial Selection</h2>
-			<p>In observing users that were presented with some of the existing color wheel solutions, I found that some users, particularly ones who were unlikely to have encountered a HSL wheel before, were not realising that to select a color they needed to select <em>both</em> a hue <em>and</em> a saturation/lightness vector. Many would only select a hue without understanding that the saturation/lightness box was there to be clicked. This, combined with the poor default lightness of 0 in some solutions, meant that users who had painstakingly selected many colours on the outer hue wheel would often have their input interpreted as 100% black.</p>
-			<p><strong>ColorWheel</strong> aims to try and solve this problem with "partial color selection". In its default behavior, the S/L grid will not show to the user until they have selected a hue on the outer wheel. This is intended so that the appearance of the S/L grid will make the users more aware that it is interactable.</p>
-			<p>Additionally CW supports "hinting". This means that when a hue is selected CW will hint the S/L box to the user by animating a small glow effect on the box. This feature is disabled by default as it requires support for animating box-shadow in jQuery, support which is not present by default and requires the use of <a href="http://www.bitstorm.org/jquery/shadow-animation/">a third party plug-in</a>.</p>
+			<p>In observing users that were presented with some of the existing color wheel solutions, I found that some users, particularly ones who were unlikely to have encountered a HSL wheel before, were not realising that to select a color they needed to select <em>both</em> a hue <em>and</em> a saturation/lightness vector. Many would only select a hue without understanding that the saturation/lightness box was there to be clicked. This is combined with a poor choice of default lightness of 0, meaning that users who had painstakingly selected many a colour on the outer hue wheel would often have their input interpreted as 100% black by the application, without the user noticing.</p>
+			<p><strong>ColorWheel</strong> solution is "partial color selection". In its default behavior, the S/L grid will not show to the user until they have selected a hue on the outer wheel. Hopefully the appearance of the S/L grid will make the users more aware that it is interactable.</p>
+			<p>If that is not sufficient, CW supports what I call 'hinting'. This means that when a hue is selected CW will 'hint' the S/L grid to the user by animating a small glow effect on the box. This feature is disabled by default as it requires support for animating CSS box-shadow in jQuery, support which is not present by default and requires the use of <a href="http://www.bitstorm.org/jquery/shadow-animation/">a third party plug-in</a>.</p>
 			<p>The first example below has hinting enabled.</p>
 			<div class="wheel"></div>
 			<script type="text/javascript">
@@ -106,8 +106,8 @@
 		
 		<div class="demo" id="demo5">
 			<h2>5. Only Hue or Only Saturation/Lightness</h2>
-			<p>You can also configure CW only as a hue or S/L picker. Below is an independent hue picker and an independent S/L picker.</p>
-			<p>The example is configured so that when a hue is selected on the top CW, that is set as the base hue on the bottom CW.</p>
+			<p>You can also configure CW as a just-hue or just-S/L picker. Below is a just-hue picker, and below that a just-S/L picker.</p>
+			<p>The example is configured so that when a hue is selected on the top picker, it is set as the base hue on the bottom picker.</p>
 			<style type="text/css">
 				#demo5 .wheel-sl .cw-colorwheel {margin-top:20px; height:100px; width:100px}
 				#demo5 .wheel-sl .cw-colorwheel .cw-sl {top:0; left:0}
