@@ -1,11 +1,14 @@
 ColorWheel
 ==========
 
-**Warning**: this isn't ready for primetime yet - some features aren't fully implemented, and test coverage is incomplete.
-
 A JavaScript **hue/saturation/lightness color wheel** for jQuery written in CoffeeScript.
 
 _Note: I do accept pull requests (so long as they are reasonable, maintain coding style, and do not cause any tests to fail - run `bundle exec rake test` before submitting a pull request)_
+
+Demo
+----
+
+View in `demo/` sub-directory, or on-line [here](http://comaleaf.github.io/ColorWheel/demo/).
 
 Features
 --------
